@@ -68,7 +68,7 @@ def build():
 def publish():
     """publish package"""
     check()
-    run('python setup.py sdist upload -r pypi')
+    run('python setup.py sdist upload -r pypi')  # Use python setup.py REGISTER
     run('python setup.py bdist_wheel upload -r pypi')
 
 
@@ -76,5 +76,5 @@ def publish():
 def publish_test():
     """publish package"""
     check()
-    run('python setup.py sdist upload -r https://testpypi.python.org/pypi')
+    run('python setup.py sdist upload -r https://testpypi.python.org/pypi')  # Use python setup.py REGISTER
     run('python setup.py bdist_wheel upload -r https://testpypi.python.org/pypi')
