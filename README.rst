@@ -10,24 +10,20 @@ Django Brotli: *Middleware that compresses response using brotli algorithm.*
         :target: https://pypi.python.org/pypi/django_activeview/
         :alt: MIT
 
-.. image:: https://api.travis-ci.org/illagrenan/django-activeview.svg
-        :target: https://travis-ci.org/illagrenan/django-activeview
+.. image:: https://api.travis-ci.org/illagrenan/django-brotli.svg
+        :target: https://travis-ci.org/illagrenan/django-brotli
         :alt: TravisCI
 
-.. image:: https://coveralls.io/repos/github/illagrenan/django-activeview/badge.svg?branch=master
-        :target: https://coveralls.io/github/illagrenan/django-activeview?branch=master
+.. image:: https://coveralls.io/repos/github/illagrenan/django-brotli/badge.svg?branch=master
+        :target: https://coveralls.io/github/illagrenan/django-brotli?branch=master
         :alt: Coverage
 
-.. image:: https://coveralls.io/repos/github/illagrenan/django-activeview/badge.svg?branch=master
-        :target: https://coveralls.io/github/illagrenan/django-activeview?branch=master
-        :alt: Coverage
-
-.. image:: https://pyup.io/repos/github/illagrenan/django-activeview/shield.svg
-     :target: https://pyup.io/repos/github/illagrenan/django-activeview/
+.. image:: https://pyup.io/repos/github/illagrenan/django-brotli/shield.svg
+     :target: https://pyup.io/repos/github/illagrenan/django-brotli/
      :alt: Updates
 
-.. image:: https://pyup.io/repos/github/illagrenan/django-activeview/python-3-shield.svg
-     :target: https://pyup.io/repos/github/illagrenan/django-activeview/
+.. image:: https://pyup.io/repos/github/illagrenan/django-brotli/python-3-shield.svg
+     :target: https://pyup.io/repos/github/illagrenan/django-brotli/
      :alt: Python 3
 
 Introduction
