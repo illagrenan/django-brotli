@@ -30,7 +30,8 @@ class BrotliMiddleware(MiddlewareMixin):
             # 1) brotlipy doesn't support streaming compression, see: https://github.com/google/brotli/issues/191
             # 2) Avoid brotli if we've already got a content-encoding.
             # 3) Client doesn't support brotli
-            # 4) It's not worth attempting to compress really short responses. This was taken from django GZipMiddleware.
+            # 4) It's not worth attempting to compress really short responses.
+            #    This was taken from django GZipMiddleware.
             # ---------
             return response
 

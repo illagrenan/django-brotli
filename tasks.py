@@ -1,7 +1,5 @@
 # -*- encoding: utf-8 -*-
-# ! python2
-
-from __future__ import (absolute_import, division, print_function, unicode_literals)
+# ! python3
 
 import shutil
 
@@ -11,7 +9,7 @@ from invoke import run, task
 @task
 def clean():
     """remove build artifacts"""
-    shutil.rmtree('django_activeview.egg-info', ignore_errors=True)
+    shutil.rmtree('django_brotli.egg-info', ignore_errors=True)
     shutil.rmtree('build', ignore_errors=True)
     shutil.rmtree('dist', ignore_errors=True)
     shutil.rmtree('htmlcov', ignore_errors=True)
@@ -21,7 +19,7 @@ def clean():
 @task
 def lint():
     """check style with flake8"""
-    run("flake8 activeview test_project/tests")
+    run("flake8 django_brotli/ tests/")
 
 
 @task
@@ -44,7 +42,7 @@ def check():
 @task
 def coverage():
     """check code coverage quickly with the default Python"""
-    run("coverage run --source activeview/templatetags test_project/manage.py test")
+    run("coverage run --source django_brotli -m py.test")
     run("coverage report -m")
     run("coverage html")
 
@@ -52,10 +50,10 @@ def coverage():
 @task
 def test_install():
     """try to install built package"""
-    run("pip uninstall django_activeview --yes", warn=True)
-    # run("pip install --use-wheel --no-index --find-links dist django_activeview")
-    run("pip install --use-wheel --no-index --find-links=file:./dist django_activeview")
-    run("pip uninstall django_activeview --yes")
+    run("pip uninstall django-brotli --yes", warn=True)
+    # run("pip install --use-wheel --no-index --find-links dist django_brotli")
+    run("pip install --use-wheel --no-index --find-links=file:./dist django-brotli")
+    run("pip uninstall django-brotli --yes")
 
 
 @task

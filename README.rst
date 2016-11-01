@@ -1,6 +1,6 @@
-====================================================
-Django Active View: *Highlight active items in menu*
-====================================================
+============================================================================
+Django Brotli: *Middleware that compresses response using brotli algorithm.*
+============================================================================
 
 .. image:: https://badge.fury.io/py/django_activeview.svg
         :target: https://pypi.python.org/pypi/django_activeview
@@ -33,64 +33,33 @@ Django Active View: *Highlight active items in menu*
 Introduction
 ------------
 
-Django template tag that checks if given view or path is active.
+TODO
 
 Installation
 ------------
 
-- Supported Python versions are: ``2.7``, ``3.4``, ``3.5`` and ``pypy``.
-- Supported Django versions are: ``1.8.x``, ``1.9.x`` and ``1.10.x``.
+- Supported Python versions are: only ``3.5``.
+- Supported Django versions are: only ``1.10.x``.
 
 .. code:: shell
 
-    pip install --upgrade django-activeview
+    pip install --upgrade django-brotli
 
 
-Add ``activeview`` to ``INSTALLED_APPS``:
+Add ``django_brotli.middleware.BrotliMiddleware`` to ``MIDDLEWARE``:
 
 .. code:: python
 
-    INSTALLED_APPS = [
-        # ...
-        'activeview',
+    MIDDLEWARE = [
+        'django_brotli.middleware.BrotliMiddleware',
         # ...
     ]
-
-Usage
------
-
-Template tag ``isactive`` accepts name of url OR path.
-
-.. code:: html+django
-
-    {% load activeview %}
-
-    {% isactive "/" %}
-        Root path ("/") is active
-    {% endisactive %}
-
-    Or:
-
-    {% isactive "index" %}
-        Url with name "index" is active
-    {% endisactive %}
-
-    Else is supported:
-
-    {% isactive "contact_us" %}
-        Url with name "contact_us" is active.
-        {% else %}
-        "contact_us" is NOT active
-    {% endisactive %}
-
-
 
 
 Inspiration and Credits
 -----------------------
 
-- https://github.com/j4mie/django-activelink
-- http://stackoverflow.com/a/18772289/752142
+TODO
 
 
 License
