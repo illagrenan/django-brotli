@@ -5,7 +5,11 @@ import re
 
 import brotli
 from django.utils.cache import patch_vary_headers
-from django.utils.deprecation import MiddlewareMixin
+
+try:
+    from django.utils.deprecation import MiddlewareMixin
+except ImportError:
+    MiddlewareMixin = object
 
 RE_ACCEPT_ENCODING_BROTLI = re.compile(r'\bbr\b')
 
