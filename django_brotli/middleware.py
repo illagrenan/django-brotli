@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 # ! python3
 
-import logging
 import re
 
 import brotli
@@ -9,7 +8,6 @@ from django.utils.cache import patch_vary_headers
 from django.utils.deprecation import MiddlewareMixin
 
 RE_ACCEPT_ENCODING_BROTLI = re.compile(r'\bbr\b')
-logger = logging.getLogger(__name__)
 
 
 class BrotliMiddleware(MiddlewareMixin):
