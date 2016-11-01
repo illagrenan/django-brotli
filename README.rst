@@ -31,7 +31,7 @@ Introduction
 
 This project consists of ``BrotliMiddleware`` which works the same as Django ``GZipMiddleware`` (`Docs`_/`Source`_). ``BrotliMiddleware`` will compress content of HTTP response using brotli algorithm (Brotli Compressed Data Format is defined in `RFC 7932`_).
 
-In November 2016 is brotli supported by Firefox, chrome, Android Browser and Opera (detailed stats on `caniuse`_). Brotli is applied only when client has sent ``Accept-Encoding`` header containing ``br``.
+In November 2016 is brotli supported by Firefox, Chrome, Android Browser and Opera (detailed stats on `caniuse`_). Brotli is applied only when client has sent ``Accept-Encoding`` header containing ``br``.
 
 .. _`Docs`: https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.middleware.gzip
 .. _`Source`: https://github.com/django/django/blob/master/django/middleware/gzip.py#L10-L52
