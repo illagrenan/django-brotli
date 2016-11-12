@@ -26,6 +26,14 @@ Django Brotli: *Middleware that compresses response using brotli algorithm*
      :target: https://pyup.io/repos/github/illagrenan/django-brotli/
      :alt: Python 3
 
+.. image:: https://img.shields.io/pypi/implementation/django_brotli.svg        
+	:target: https://pypi.python.org/pypi/django_brotli/         
+	:alt: Supported Python implementations      
+
+.. image:: https://img.shields.io/pypi/pyversions/django_brotli.svg    
+	:target: https://pypi.python.org/pypi/django_brotli/             
+	:alt: Supported Python versions        
+
 Introduction
 ------------
 
