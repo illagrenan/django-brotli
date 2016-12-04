@@ -51,8 +51,7 @@ def coverage():
 def test_install():
     """try to install built package"""
     run("pip uninstall django-brotli --yes", warn=True)
-    # run("pip install --use-wheel --no-index --find-links dist django_brotli")
-    run("pip install --use-wheel --no-index --find-links=file:./dist django-brotli")
+    run("pip install --use-wheel --no-cache-dir --find-links=file:./dist django-brotli")
     run("pip uninstall django-brotli --yes")
 
 

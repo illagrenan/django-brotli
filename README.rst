@@ -3,32 +3,32 @@ Django Brotli: *Middleware that compresses response using brotli algorithm*
 ===========================================================================
 
 .. image:: https://img.shields.io/pypi/v/django-brotli.svg
-        :target: https://pypi.python.org/pypi/django-brotli
-        :alt: PyPi
+:target: https://pypi.python.org/pypi/django-brotli
+    :alt: PyPi
 
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg
-        :target: https://pypi.python.org/pypi/django-brotli/
-        :alt: MIT
+:target: https://pypi.python.org/pypi/django-brotli/
+    :alt: MIT
 
 .. image:: https://img.shields.io/travis/illagrenan/django-brotli.svg
-        :target: https://travis-ci.org/illagrenan/django-brotli
-        :alt: TravisCI
+:target: https://travis-ci.org/illagrenan/django-brotli
+    :alt: TravisCI
 
 .. image:: https://img.shields.io/coveralls/illagrenan/django-brotli.svg
-        :target: https://coveralls.io/github/illagrenan/django-brotli?branch=master
-        :alt: Coverage
+:target: https://coveralls.io/github/illagrenan/django-brotli?branch=master
+    :alt: Coverage
 
 .. image:: https://pyup.io/repos/github/illagrenan/django-brotli/shield.svg
-     :target: https://pyup.io/repos/github/illagrenan/django-brotli/
-     :alt: Updates
+:target: https://pyup.io/repos/github/illagrenan/django-brotli/
+    :alt: Updates
 
-.. image:: https://img.shields.io/pypi/implementation/django-brotli.svg        
-	:target: https://pypi.python.org/pypi/django_brotli/         
-	:alt: Supported Python implementations      
+.. image:: https://img.shields.io/pypi/implementation/django-brotli.svg
+	:target: https://pypi.python.org/pypi/django_brotli/
+	:alt: Supported Python implementations
 
-.. image:: https://img.shields.io/pypi/pyversions/django-brotli.svg    
-	:target: https://pypi.python.org/pypi/django_brotli/             
-	:alt: Supported Python versions        
+.. image:: https://img.shields.io/pypi/pyversions/django-brotli.svg
+	:target: https://pypi.python.org/pypi/django_brotli/
+	:alt: Supported Python versions
 
 Introduction
 ------------
@@ -47,7 +47,7 @@ Installation
 
 **This software is in alpha version and should not be used in production.**
 
-- Supported Python versions are: only ``3.5``.
+- Supported Python versions are: ``3.4.``, ``3.5``, ``3.6-dev`` and ``3.7-dev``.
 - Supported Django versions are: ``1.8.x``, ``1.9.x`` and ``1.10.x``.
 
 .. code:: shell
