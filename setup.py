@@ -7,7 +7,7 @@ from setuptools import setup
 
 setup(
     name='django-brotli',
-    version='0.1.0',
+    version='0.1.1',
     description="""Middleware that compresses response using brotli algorithm.""",
     long_description=io.open("README.rst", 'r', encoding="utf-8").read(),
     url='https://github.com/illagrenan/django-brotli',
@@ -30,6 +30,10 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
+        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3 :: Only',
+        'Operating System :: OS Independent'
     ]
 )
