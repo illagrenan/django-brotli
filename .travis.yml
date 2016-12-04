@@ -10,6 +10,7 @@ env:
   - DJANGO="Django<1.10"  # Django 1.9.x                |   2.7, 3.4, 3.5
   - DJANGO="Django<1.11"  # Django 1.10.x               |   2.7, 3.4, 3.5
 install:
+    - if [[ $TRAVIS_PYTHON_VERSION == 3.4 ]]; then pip install typing; fi
     - pip install --quiet --upgrade -r requirements.txt
     - pip install --quiet --upgrade setuptools wheel
     - pip install --quiet --upgrade "$DJANGO"
