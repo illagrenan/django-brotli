@@ -2,7 +2,7 @@
 Django Brotli: *Middleware that compresses response using brotli algorithm*
 ===========================================================================
 
-.. image:: https://badge.fury.io/py/django-brotli.svg
+.. image:: https://img.shields.io/pypi/v/django-brotli.svg
         :target: https://pypi.python.org/pypi/django-brotli
         :alt: PyPi
 
@@ -10,11 +10,11 @@ Django Brotli: *Middleware that compresses response using brotli algorithm*
         :target: https://pypi.python.org/pypi/django-brotli/
         :alt: MIT
 
-.. image:: https://api.travis-ci.org/illagrenan/django-brotli.svg
+.. image:: https://img.shields.io/travis/illagrenan/django-brotli.svg
         :target: https://travis-ci.org/illagrenan/django-brotli
         :alt: TravisCI
 
-.. image:: https://coveralls.io/repos/github/illagrenan/django-brotli/badge.svg?branch=master
+.. image:: https://img.shields.io/coveralls/illagrenan/django-brotli.svg
         :target: https://coveralls.io/github/illagrenan/django-brotli?branch=master
         :alt: Coverage
 
@@ -22,9 +22,13 @@ Django Brotli: *Middleware that compresses response using brotli algorithm*
      :target: https://pyup.io/repos/github/illagrenan/django-brotli/
      :alt: Updates
 
-.. image:: https://pyup.io/repos/github/illagrenan/django-brotli/python-3-shield.svg
-     :target: https://pyup.io/repos/github/illagrenan/django-brotli/
-     :alt: Python 3
+.. image:: https://img.shields.io/pypi/implementation/django-brotli.svg        
+	:target: https://pypi.python.org/pypi/django_brotli/         
+	:alt: Supported Python implementations      
+
+.. image:: https://img.shields.io/pypi/pyversions/django-brotli.svg    
+	:target: https://pypi.python.org/pypi/django_brotli/             
+	:alt: Supported Python versions        
 
 Introduction
 ------------
