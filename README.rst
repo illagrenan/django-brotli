@@ -3,32 +3,32 @@ Django Brotli: *Middleware that compresses response using brotli algorithm*
 ===========================================================================
 
 .. image:: https://img.shields.io/pypi/v/django-brotli.svg
-:target: https://pypi.python.org/pypi/django-brotli
+    :target: https://pypi.python.org/pypi/django-brotli
     :alt: PyPi
 
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg
-:target: https://pypi.python.org/pypi/django-brotli/
+    :target: https://pypi.python.org/pypi/django-brotli/
     :alt: MIT
 
 .. image:: https://img.shields.io/travis/illagrenan/django-brotli.svg
-:target: https://travis-ci.org/illagrenan/django-brotli
+    :target: https://travis-ci.org/illagrenan/django-brotli
     :alt: TravisCI
 
 .. image:: https://img.shields.io/coveralls/illagrenan/django-brotli.svg
-:target: https://coveralls.io/github/illagrenan/django-brotli?branch=master
+    :target: https://coveralls.io/github/illagrenan/django-brotli?branch=master
     :alt: Coverage
 
 .. image:: https://pyup.io/repos/github/illagrenan/django-brotli/shield.svg
-:target: https://pyup.io/repos/github/illagrenan/django-brotli/
+    :target: https://pyup.io/repos/github/illagrenan/django-brotli/
     :alt: Updates
 
 .. image:: https://img.shields.io/pypi/implementation/django-brotli.svg
-	:target: https://pypi.python.org/pypi/django_brotli/
-	:alt: Supported Python implementations
+    :target: https://pypi.python.org/pypi/django_brotli/
+    :alt: Supported Python implementations
 
 .. image:: https://img.shields.io/pypi/pyversions/django-brotli.svg
-	:target: https://pypi.python.org/pypi/django_brotli/
-	:alt: Supported Python versions
+    :target: https://pypi.python.org/pypi/django_brotli/
+    :alt: Supported Python versions
 
 Introduction
 ------------
