@@ -15,11 +15,10 @@ setup(
     author='Vasek Dohnal',
     author_email='vaclav.dohnal@gmail.com',
     packages=['django_brotli'],
-    install_requires=[
+    install_requires=['django', 'brotlipy'],
+    extras_require={
         ":python_version<'3.5'": ['typing'],
-        'django',
-        'brotlipy'
-    ],
+    },
     include_package_data=True,
     zip_safe=True,
     classifiers=[
