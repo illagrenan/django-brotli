@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 # ! python3
+
 import os
 import shutil
 import webbrowser
@@ -25,7 +26,7 @@ def lint():
 
 @task
 def test():
-    run("py.test --verbose --showlocals tests/")
+    run("py.test tests/")
 
 
 @task
