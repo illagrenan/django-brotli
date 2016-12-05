@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 # ! python3
+
 import gzip
 from typing import Mapping, Optional
 from unittest import TestCase
@@ -8,7 +9,7 @@ import brotli
 from django.middleware.gzip import GZipMiddleware
 
 from django_brotli.middleware import BrotliMiddleware, MIN_LEN_FOR_RESPONSE_TO_PROCESS
-from tests.utils import UTF8_LOREM_IPSUM
+from .utils import UTF8_LOREM_IPSUM_IN_CZECH
 
 
 class FakeRequestAcceptsBrotli(object):
@@ -46,7 +47,7 @@ class FakeResponse(object):
 class MiddlewareTestCase(TestCase):
     def test_middleware_compress_response(self):
         fake_request = FakeRequestAcceptsBrotli()
-        response_content = UTF8_LOREM_IPSUM
+        response_content = UTF8_LOREM_IPSUM_IN_CZECH
         fake_response = FakeResponse(content=response_content)
 
         brotli_middleware = BrotliMiddleware()
@@ -57,7 +58,7 @@ class MiddlewareTestCase(TestCase):
 
     def test_etag_is_updated_if_present(self):
         fake_request = FakeRequestAcceptsBrotli()
-        response_content = UTF8_LOREM_IPSUM * 5
+        response_content = UTF8_LOREM_IPSUM_IN_CZECH * 5
         fake_etag_content = "\"foo\""
         fake_response = FakeResponse(content=response_content, headers={"ETag": fake_etag_content})
 
@@ -86,7 +87,7 @@ class MiddlewareTestCase(TestCase):
 
     def test_middleware_wont_compress_if_client_not_accept(self):
         fake_request = FakeLegacyRequest()
-        response_content = UTF8_LOREM_IPSUM
+        response_content = UTF8_LOREM_IPSUM_IN_CZECH
         fake_response = FakeResponse(content=response_content)
 
         brotli_middleware = BrotliMiddleware()
@@ -96,7 +97,7 @@ class MiddlewareTestCase(TestCase):
 
     def test_middleware_wont_compress_if_response_is_already_compressed(self):
         fake_request = FakeRequestAcceptsBrotli()
-        response_content = UTF8_LOREM_IPSUM
+        response_content = UTF8_LOREM_IPSUM_IN_CZECH
         fake_response = FakeResponse(content=response_content)
 
         brotli_middleware = BrotliMiddleware()
