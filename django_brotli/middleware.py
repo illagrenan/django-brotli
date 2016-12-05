@@ -12,6 +12,7 @@ except ImportError:
     MiddlewareMixin = object
 
 RE_ACCEPT_ENCODING_BROTLI = re.compile(r'\bbr\b')
+MIN_LEN_FOR_RESPONSE_TO_PROCESS = 200
 
 
 class BrotliMiddleware(MiddlewareMixin):
@@ -23,11 +24,12 @@ class BrotliMiddleware(MiddlewareMixin):
 
     # noinspection PyMethodMayBeStatic
     def process_response(self, request, response):
+
         if any(
             (response.streaming,
              response.has_header('Content-Encoding'),
              not RE_ACCEPT_ENCODING_BROTLI.search(request.META.get('HTTP_ACCEPT_ENCODING', '')),
-             len(response.content) < 200)):
+             len(response.content) < MIN_LEN_FOR_RESPONSE_TO_PROCESS)):
             # ---------
             # 1) brotlipy doesn't support streaming compression, see: https://github.com/google/brotli/issues/191
             # 2) Avoid brotli if we've already got a content-encoding.
@@ -35,6 +37,7 @@ class BrotliMiddleware(MiddlewareMixin):
             # 4) It's not worth attempting to compress really short responses.
             #    This was taken from django GZipMiddleware.
             # ---------
+
             return response
 
         patch_vary_headers(response, ('Accept-Encoding',))

@@ -1,7 +1,8 @@
 # -*- encoding: utf-8 -*-
 # ! python3
-
+import os
 import shutil
+import webbrowser
 
 from invoke import run, task
 
@@ -45,6 +46,8 @@ def coverage():
     run("coverage run --source django_brotli -m py.test")
     run("coverage report -m")
     run("coverage html")
+
+    webbrowser.open('file://' + os.path.realpath("htmlcov/index.html"), new=2)
 
 
 @task
