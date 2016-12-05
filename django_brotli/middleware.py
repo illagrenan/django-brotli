@@ -4,6 +4,8 @@
 import re
 
 import brotli
+from django.http import HttpRequest
+from django.http import HttpResponse
 from django.utils.cache import patch_vary_headers
 
 try:
@@ -15,6 +17,7 @@ RE_ACCEPT_ENCODING_BROTLI = re.compile(r'\bbr\b')
 MIN_LEN_FOR_RESPONSE_TO_PROCESS = 200
 
 
+# noinspection PyClassHasNoInit
 class BrotliMiddleware(MiddlewareMixin):
     """
     This middleware compresses content if the browser allows `brotli` compression.
@@ -22,9 +25,9 @@ class BrotliMiddleware(MiddlewareMixin):
     on the Accept-Encoding header. Code of this middleware is based on Django's `GZipMiddleware`.
     """
 
-    # noinspection PyMethodMayBeStatic
-    def process_response(self, request, response):
-        if response.streaming or response.has_header('Content-Encoding') or not self._accepts_brotli_encoding(request) or len(response.content) < MIN_LEN_FOR_RESPONSE_TO_PROCESS:
+    def process_response(self, request: HttpRequest, response: HttpResponse) -> HttpResponse:
+        if (response.streaming or response.has_header('Content-Encoding') or
+                not self._accepts_brotli_encoding(request) or len(response.content) < MIN_LEN_FOR_RESPONSE_TO_PROCESS):
             # ---------
             # 1) brotlipy doesn't support streaming compression, see: https://github.com/google/brotli/issues/191
             # 2) Avoid brotli if we've already got a content-encoding.
@@ -52,5 +55,6 @@ class BrotliMiddleware(MiddlewareMixin):
 
         return response
 
-    def _accepts_brotli_encoding(self, request) -> bool:
+    # noinspection PyMethodMayBeStatic
+    def _accepts_brotli_encoding(self, request: HttpRequest) -> bool:
         return bool(RE_ACCEPT_ENCODING_BROTLI.search(request.META.get('HTTP_ACCEPT_ENCODING', '')))
