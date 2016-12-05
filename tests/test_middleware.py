@@ -37,7 +37,7 @@ class FakeResponse(object):
         return header in self.headers
 
     def __getitem__(self, header: str) -> str:
-        return self.headers[header][0]
+        return self.headers[header]
 
     def __setitem__(self, header: str, value: str):
         self.headers[header] = value
@@ -54,6 +54,22 @@ class MiddlewareTestCase(TestCase):
 
         decompressed_response = brotli.decompress(data=brotli_response.content)  # type: bytes
         self.assertEqual(response_content, decompressed_response.decode(encoding='utf-8'))
+
+    def test_etag_is_updated_if_present(self):
+        fake_request = FakeRequestAcceptsBrotli()
+        response_content = UTF8_LOREM_IPSUM * 5
+        fake_etag_content = "\"foo\""
+        fake_response = FakeResponse(content=response_content, headers={"ETag": fake_etag_content})
+
+        self.assertEqual(fake_response['ETag'], fake_etag_content)
+
+        brotli_middleware = BrotliMiddleware()
+        brotli_response = brotli_middleware.process_response(fake_request, fake_response)
+
+        decompressed_response = brotli.decompress(data=brotli_response.content)  # type: bytes
+        self.assertEqual(response_content, decompressed_response.decode(encoding='utf-8'))
+
+        self.assertEqual(brotli_response['ETag'], '"foo;br\\"')
 
     def test_middleware_wont_compress_response_if_response_is_small(self):
         fake_request = FakeRequestAcceptsBrotli()
@@ -84,9 +100,9 @@ class MiddlewareTestCase(TestCase):
         fake_response = FakeResponse(content=response_content)
 
         brotli_middleware = BrotliMiddleware()
-        gggbrotli_middleware = GZipMiddleware()
+        django_gzip_middleware = GZipMiddleware()
 
-        gggbrotli_response = gggbrotli_middleware.process_response(fake_request, fake_response)
-        brotli_response = brotli_middleware.process_response(fake_request, gggbrotli_response)
+        gzip_response = django_gzip_middleware.process_response(fake_request, fake_response)
+        brotli_response = brotli_middleware.process_response(fake_request, gzip_response)
 
         self.assertEqual(response_content, gzip.decompress(brotli_response.content).decode(encoding='utf-8'))

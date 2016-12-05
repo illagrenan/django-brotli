@@ -51,7 +51,7 @@ class BrotliMiddleware(MiddlewareMixin):
         response['Content-Length'] = str(len(response.content))
 
         if response.has_header('ETag'):
-            response['ETag'] = re.sub('"$', ';br"', response['ETag'])
+            response['ETag'] = re.sub(r"\"$", r";br\"", response['ETag'])
 
         response['Content-Encoding'] = 'br'
 
