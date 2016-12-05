@@ -35,7 +35,6 @@ class BrotliMiddleware(MiddlewareMixin):
             # 4) It's not worth attempting to compress really short responses.
             #    This was taken from django GZipMiddleware.
             # ---------
-
             return response
 
         patch_vary_headers(response, ('Accept-Encoding',))
