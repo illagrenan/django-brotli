@@ -74,6 +74,15 @@ Credits and Resources
 .. |brotlipy| replace:: ``brotlipy`` Python bindings to the Brotli compression library
 .. _brotlipy: https://github.com/python-hyper/brotlipy
 
+Contributing
+------------
+
+1. Clone this repository (``git clone ...``)
+2. Create virtualenv
+3. Install package dependencies: ``pip install --upgrade -r requirements.txt``
+4. Change some code
+5. Run tests: in project root simply execute ``pytest``
+6. Submit PR :)
 
 License
 -------
