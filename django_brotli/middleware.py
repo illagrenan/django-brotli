@@ -24,12 +24,7 @@ class BrotliMiddleware(MiddlewareMixin):
 
     # noinspection PyMethodMayBeStatic
     def process_response(self, request, response):
-
-        if any(
-            (response.streaming,
-             response.has_header('Content-Encoding'),
-             not RE_ACCEPT_ENCODING_BROTLI.search(request.META.get('HTTP_ACCEPT_ENCODING', '')),
-             len(response.content) < MIN_LEN_FOR_RESPONSE_TO_PROCESS)):
+        if response.streaming or response.has_header('Content-Encoding') or not self._accepts_brotli_encoding(request) or len(response.content) < MIN_LEN_FOR_RESPONSE_TO_PROCESS:
             # ---------
             # 1) brotlipy doesn't support streaming compression, see: https://github.com/google/brotli/issues/191
             # 2) Avoid brotli if we've already got a content-encoding.
@@ -56,3 +51,6 @@ class BrotliMiddleware(MiddlewareMixin):
         response['Content-Encoding'] = 'br'
 
         return response
+
+    def _accepts_brotli_encoding(self, request) -> bool:
+        return bool(RE_ACCEPT_ENCODING_BROTLI.search(request.META.get('HTTP_ACCEPT_ENCODING', '')))
