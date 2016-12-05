@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 # ! python3
+
 import gzip
 from typing import Mapping, Optional
 from unittest import TestCase
