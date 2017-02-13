@@ -2,7 +2,7 @@
 -r requirements_setup.txt
 
 # Requirements needed for development & build & testing
-pytest==3.0.5
+pytest==3.0.6
 flexmock==0.10.2
 coverage==4.3.1
 coveralls==1.1
