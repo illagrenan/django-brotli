@@ -47,8 +47,8 @@ Installation
 
 **This software is in alpha version and should not be used in production.**
 
-- Supported Python versions are: ``3.4.``, ``3.5``, ``3.6-dev`` and ``3.7-dev``.
-- Supported Django versions are: ``1.8.x``, ``1.9.x`` and ``1.10.x``.
+- Supported Python versions are: ``3.4.``, ``3.5``, ``3.6`` and ``3.7-dev``.
+- Supported Django versions are: ``1.8.x`` (LTS), ``1.9.x``, ``1.10.x`` and ``1.11.x`` (LTS).
 
 .. code:: shell
 
