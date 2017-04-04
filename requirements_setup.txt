@@ -1,4 +1,4 @@
 # Requirements required by this package:
 
 brotlipy==0.6.0
-Django==1.10.6
+Django==1.10.7
