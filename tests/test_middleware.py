@@ -2,11 +2,11 @@
 # ! python3
 
 import gzip
-from typing import Mapping, Optional
 from unittest import TestCase
 
 import brotli
 from django.middleware.gzip import GZipMiddleware
+from typing import Mapping, Optional
 
 from django_brotli.middleware import BrotliMiddleware, MIN_LEN_FOR_RESPONSE_TO_PROCESS
 from .utils import UTF8_LOREM_IPSUM_IN_CZECH
@@ -36,6 +36,9 @@ class FakeResponse(object):
 
     def has_header(self, header: str) -> bool:
         return header in self.headers
+
+    def get(self, key):
+        return self.headers.get(key, None)
 
     def __getitem__(self, header: str) -> str:
         return self.headers[header]
