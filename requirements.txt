@@ -12,3 +12,4 @@ docutils~=0.13.1 # pyup: ignore
 pygments~=2.1.3 # pyup: ignore
 flake8~=3.3.0 # pyup: ignore
 invoke==0.12.2 # pyup: ignore
+tox # pyup: ignore
