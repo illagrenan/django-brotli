@@ -19,6 +19,7 @@ setup(
     extras_require={
         ":python_version<'3.5'": ['typing'],
     },
+    python_requires='~=3.4',
     include_package_data=True,
     zip_safe=True,
     classifiers=[
