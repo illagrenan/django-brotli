@@ -1,6 +1,8 @@
 # -*- encoding: utf-8 -*-
 # ! python3
 
+__all__ = ['BrotliMiddleware']
+
 import re
 
 import brotli
