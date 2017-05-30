@@ -68,10 +68,11 @@ Add ``django_brotli.middleware.BrotliMiddleware`` to ``MIDDLEWARE``:
 Credits and Resources
 ---------------------
 
-- |brotlipy|_.
-- `Brotli on Wikipedia <https://en.wikipedia.org/wiki/Brotli>`_
+- |brotlipy|_
+- `Brotli on Wikipedia (https://en.wikipedia.org/wiki/Brotli) <https://en.wikipedia.org/wiki/Brotli>`_
+- `Brotli compression format repository by Google (https://github.com/google/brotli) <https://github.com/google/brotli>`_
 
-.. |brotlipy| replace:: ``brotlipy`` Python bindings to the Brotli compression library
+.. |brotlipy| replace:: ``brotlipy`` Python bindings to the Brotli compression library (https://github.com/python-hyper/brotlipy)
 .. _brotlipy: https://github.com/python-hyper/brotlipy
 
 Contributing
