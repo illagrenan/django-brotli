@@ -1,8 +1,6 @@
 # -*- encoding: utf-8 -*-
 # ! python3
 
-__all__ = ['BrotliMiddleware']
-
 import re
 
 import brotli
@@ -17,6 +15,8 @@ except ImportError:
 
 RE_ACCEPT_ENCODING_BROTLI = re.compile(r'\bbr\b')
 MIN_LEN_FOR_RESPONSE_TO_PROCESS = 200
+
+__all__ = ['BrotliMiddleware']
 
 
 # noinspection PyClassHasNoInit
