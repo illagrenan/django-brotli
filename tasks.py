@@ -3,6 +3,7 @@
 
 import os
 import shutil
+import warnings
 import webbrowser
 
 from invoke import run, task
@@ -72,9 +73,18 @@ def build():
 @task
 def publish():
     """publish package"""
+    warnings.warn("Deprecated", DeprecationWarning, stacklevel=2)
+
     check()
     run('python setup.py sdist upload -r pypi')  # Use python setup.py REGISTER
     run('python setup.py bdist_wheel upload -r pypi')
+
+
+@task
+def publish_twine():
+    """publish package"""
+    check()
+    run('twine upload dist/* --skip-existing')
 
 
 @task
