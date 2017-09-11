@@ -2,6 +2,7 @@
 # ! python3
 
 import os
+import sys
 import shutil
 import warnings
 import webbrowser
@@ -51,7 +52,9 @@ def coverage():
     run("coverage report -m")
     run("coverage html")
 
-    webbrowser.open('file://' + os.path.realpath("htmlcov/index.html"), new=2)
+    if sys.stdout.isatty():
+        # Running in a real terminal
+        webbrowser.open('file://' + os.path.realpath("htmlcov/index.html"), new=2)
 
 
 @task
