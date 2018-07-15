@@ -13,7 +13,6 @@ env:
   - DJANGO="Django~=2.0"   # Django 2.0
   - DJANGO="Django~=2.1"   # Django 2.1
 install:
-    - if [[ $TRAVIS_PYTHON_VERSION == 3.4 ]]; then pip install --quiet --upgrade typing; fi
     - pip install --quiet --upgrade -r requirements.txt
     - pip install --quiet --upgrade setuptools wheel
     - pip install --quiet --upgrade "$DJANGO"
