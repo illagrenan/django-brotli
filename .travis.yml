@@ -11,7 +11,6 @@ python:
 env:
   - DJANGO="Django~=1.1"   # Django 1.11  (LTS version)
   - DJANGO="Django~=2.0"   # Django 2.0
-  - DJANGO="Django~=2.1"   # Django 2.1
 install:
     - pip install --quiet --upgrade -r requirements.txt
     - pip install --quiet --upgrade setuptools wheel
