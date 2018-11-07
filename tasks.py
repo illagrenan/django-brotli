@@ -1,19 +1,16 @@
 # -*- encoding: utf-8 -*-
 # ! python3
 
-import os
-import sys
 import shutil
 import warnings
-import webbrowser
 
-from invoke import run, task
+from invoke import task
 
 PROJECT_NAME = 'django_brotli'
 
 
 @task
-def clean():
+def clean(ctx):
     """remove build artifacts"""
     shutil.rmtree('{PROJECT_NAME}.egg-info'.format(PROJECT_NAME=PROJECT_NAME), ignore_errors=True)
     shutil.rmtree('build', ignore_errors=True)
@@ -23,76 +20,60 @@ def clean():
 
 
 @task
-def lint():
-    """check style with flake8"""
-    run("flake8 {PROJECT_NAME}/ tests/".format(PROJECT_NAME=PROJECT_NAME))
+def test(ctx):
+    ctx.run("pytest tests/")
 
 
 @task
-def test():
-    run("py.test")
-
-
-@task
-def test_all():
-    """run tests on every Python version with tox"""
-    run("tox")
-
-
-@task
-def check():
-    """Check setup"""
-    run("python setup.py --no-user-cfg --verbose check --metadata --restructuredtext --strict")
-
-
-@task
-def coverage():
+def coverage(ctx):
     """check code coverage quickly with the default Python"""
-    run("coverage run --source {PROJECT_NAME} -m py.test".format(PROJECT_NAME=PROJECT_NAME))
-    run("coverage report -m")
-    run("coverage html")
-
-    if sys.stdout.isatty():
-        # Running in a real terminal
-        webbrowser.open('file://' + os.path.realpath("htmlcov/index.html"), new=2)
+    ctx.run("coverage run --source {PROJECT_NAME} -m pytest".format(PROJECT_NAME=PROJECT_NAME))
+    ctx.run("coverage report -m")
+    ctx.run("coverage html")
 
 
 @task
-def test_install():
+def check(ctx):
+    """Check setup"""
+    ctx.run("python setup.py --no-user-cfg --verbose check --metadata --restructuredtext --strict")
+
+
+@task
+def test_install(ctx):
     """try to install built package"""
-    run("pip uninstall {PROJECT_NAME} --yes".format(PROJECT_NAME=PROJECT_NAME), warn=True)
-    run("pip install --no-cache-dir --no-index --find-links=file:./dist {PROJECT_NAME}".format(PROJECT_NAME=PROJECT_NAME))
-    run("pip uninstall {PROJECT_NAME} --yes".format(PROJECT_NAME=PROJECT_NAME))
+    ctx.run("pip uninstall {PROJECT_NAME} --yes".format(PROJECT_NAME=PROJECT_NAME), warn=True)
+    ctx.run("pip install --no-cache-dir --no-index --find-links=file:./dist {PROJECT_NAME}".format(PROJECT_NAME=PROJECT_NAME))
+    ctx.run("pip uninstall {PROJECT_NAME} --yes".format(PROJECT_NAME=PROJECT_NAME))
 
 
 @task
-def build():
+def build(ctx):
     """build package"""
-    run("python setup.py build")
-    run("python setup.py sdist")
-    run("python setup.py bdist_wheel")
+    ctx.run("python setup.py build")
+    ctx.run("python setup.py sdist")
+    ctx.run("python setup.py bdist_wheel")
 
 
 @task
-def publish():
+def publish(ctx):
     """publish package"""
     warnings.warn("Deprecated", DeprecationWarning, stacklevel=2)
 
-    check()
-    run('python setup.py sdist upload -r pypi')  # Use python setup.py REGISTER
-    run('python setup.py bdist_wheel upload -r pypi')
+    check(ctx)
+    ctx.run('python setup.py sdist upload -r pypi')  # Use python setup.py REGISTER
+    ctx.run('python setup.py bdist_wheel upload -r pypi')
 
 
 @task
-def publish_twine():
+def publish_twine(ctx):
     """publish package"""
-    check()
-    run('twine upload dist/* --skip-existing')
+    check(ctx)
+    ctx.run('twine upload dist/* --skip-existing')
 
 
 @task
-def publish_test():
+def publish_test(ctx):
     """publish package"""
-    check()
-    run('python setup.py sdist upload -r https://testpypi.python.org/pypi')  # Use python setup.py REGISTER
-    run('python setup.py bdist_wheel upload -r https://testpypi.python.org/pypi')
+    check(ctx)
+    ctx.run('python setup.py sdist upload -r https://test.pypi.org/legacy/')  # Use python setup.py REGISTER
+    ctx.run('python setup.py bdist_wheel upload -r https://test.pypi.org/legacy/')
