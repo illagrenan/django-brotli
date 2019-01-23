@@ -3,12 +3,12 @@ sudo: false
 dist: xenial
 python:
   - "3.5"
-  - "3.5-dev" # 3.5 development branch
+  - "3.5-dev"
   - "3.6"
-  - "3.6-dev" # 3.6 development branch
+  - "3.6-dev"
   - "3.7"
-  - "3.7-dev" # 3.7 development branch
-  - "nightly" # currently points to 3.7-dev
+  - "3.7-dev"
+  - "nightly"
 env:
   - DJANGO="Django~=1.11"
   - DJANGO="Django~=2.0"
