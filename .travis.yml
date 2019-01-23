@@ -18,7 +18,7 @@ install:
     - pip install --quiet --upgrade setuptools wheel
     - pip install --quiet --upgrade "$DJANGO"
 script:
-    - python -m pip install --upgrade pip
+    - python -m pip install --upgrade pip setuptools wheel
     - inv test
     - inv build
     - inv test-install
