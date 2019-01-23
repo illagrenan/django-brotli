@@ -23,7 +23,7 @@ script:
     - python -m pip install -U pip
     - inv test
     - inv build
-    - inv test_install
+    - inv test-install
     - inv coverage
 after_success:
     - coveralls
