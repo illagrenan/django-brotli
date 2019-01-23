@@ -7,3 +7,7 @@ action "Rebase" {
   uses = "docker://cirrusactions/rebase:latest"
   secrets = ["GITHUB_TOKEN"]
 }
+
+workflow "New workflow" {
+  on = "push"
+}
