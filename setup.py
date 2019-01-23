@@ -16,10 +16,7 @@ setup(
     author_email='vaclav.dohnal@gmail.com',
     packages=['django_brotli'],
     install_requires=['django', 'brotli'],
-    extras_require={
-        ":python_version<'3.5'": ['typing'],
-    },
-    python_requires='~=3.4',
+    python_requires='~=3.5',
     include_package_data=True,
     zip_safe=True,
     classifiers=[
@@ -31,7 +28,6 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',

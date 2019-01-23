@@ -2,7 +2,6 @@ language: python
 sudo: false
 dist: xenial
 python:
-  - "3.4"
   - "3.5"
   - "3.5-dev" # 3.5 development branch
   - "3.6"
@@ -15,12 +14,11 @@ env:
   - DJANGO="Django<1.11"  # Django 1.10.x                |   2.7, 3.4, 3.5
   - DJANGO="Django<2.0"   # Django 1.11.x (LTS version)  |   2.7, 3.4, 3.5, 3.6
 install:
-    - if [[ $TRAVIS_PYTHON_VERSION == 3.4 ]]; then pip install --quiet --upgrade typing; fi
     - pip install --quiet --upgrade -r requirements.txt
     - pip install --quiet --upgrade setuptools wheel
     - pip install --quiet --upgrade "$DJANGO"
 script:
-    - python -m pip install -U pip
+    - python -m pip install --upgrade pip setuptools wheel
     - inv test
     - inv build
     - inv test-install
