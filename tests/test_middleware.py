@@ -56,7 +56,7 @@ class MiddlewareTestCase(TestCase):
         brotli_middleware = BrotliMiddleware()
         brotli_response = brotli_middleware.process_response(fake_request, fake_response)
 
-        decompressed_response = brotli.decompress(data=brotli_response.content)  # type: bytes
+        decompressed_response = brotli.decompress(brotli_response.content)  # type: bytes
         self.assertEqual(response_content, decompressed_response.decode(encoding='utf-8'))
 
     def test_etag_is_updated_if_present(self):
@@ -70,7 +70,7 @@ class MiddlewareTestCase(TestCase):
         brotli_middleware = BrotliMiddleware()
         brotli_response = brotli_middleware.process_response(fake_request, fake_response)
 
-        decompressed_response = brotli.decompress(data=brotli_response.content)  # type: bytes
+        decompressed_response = brotli.decompress(brotli_response.content)  # type: bytes
         self.assertEqual(response_content, decompressed_response.decode(encoding='utf-8'))
 
         self.assertEqual(brotli_response['ETag'], '"foo;br\\"')
