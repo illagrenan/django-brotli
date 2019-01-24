@@ -72,6 +72,13 @@ def publish_twine(ctx):
 
 
 @task
+def publish_twine_test(ctx):
+    """publish package"""
+    check(ctx)
+    ctx.run('twine upload --repository testpypi dist/* --skip-existing')
+
+
+@task
 def publish_test(ctx):
     """publish package"""
     check(ctx)
