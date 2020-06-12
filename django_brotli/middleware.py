@@ -7,11 +7,12 @@ import brotli
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.utils.cache import patch_vary_headers
+from django.http.response import FileResponse
 
 try:
     from django.utils.deprecation import MiddlewareMixin
 except ImportError:
-    MiddlewareMixin = object
+    MiddlewareMixin = objec
 
 RE_ACCEPT_ENCODING_BROTLI = re.compile(r'\bbr\b')
 MIN_LEN_FOR_RESPONSE_TO_PROCESS = 200
@@ -28,8 +29,8 @@ class BrotliMiddleware(MiddlewareMixin):
     """
 
     def process_response(self, request: HttpRequest, response: HttpResponse) -> HttpResponse:
-        if (not response.streaming and (response.has_header('Content-Encoding') or
-                not self._accepts_brotli_encoding(request) or len(response.content) < MIN_LEN_FOR_RESPONSE_TO_PROCESS)):
+        if (response.has_header('Content-Encoding') or
+                not self._accepts_brotli_encoding(request) or (not response.streaming and len(response.content) < MIN_LEN_FOR_RESPONSE_TO_PROCESS)):
             # ---------
             # 1) brotlipy doesn't support streaming compression, see: https://github.com/google/brotli/issues/191
             # 2) Avoid brotli if we've already got a content-encoding.
@@ -40,6 +41,7 @@ class BrotliMiddleware(MiddlewareMixin):
             return response
 
         patch_vary_headers(response, ('Accept-Encoding',))
+        print("hello")
 
         if response.streaming:
             compressed_content = self.compress_stream(response.streaming_content)
