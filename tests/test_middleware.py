@@ -12,19 +12,19 @@ from django_brotli.middleware import BrotliMiddleware, MIN_LEN_FOR_RESPONSE_TO_P
 from .utils import UTF8_LOREM_IPSUM_IN_CZECH
 
 
-class FakeRequestAcceptsBrotli(object):
+class FakeRequestAcceptsBrotli:
     META = {
         'HTTP_ACCEPT_ENCODING': 'gzip, deflate, sdch, br'
     }
 
 
-class FakeLegacyRequest(object):
+class FakeLegacyRequest:
     META = {
         'HTTP_ACCEPT_ENCODING': 'gzip, deflate, sdch'
     }
 
 
-class FakeResponse(object):
+class FakeResponse:
     streaming = False
 
     def __init__(self, content: str, headers: Optional[Mapping[str, str]] = None, streaming: Optional[bool] = None):
