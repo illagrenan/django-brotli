@@ -28,8 +28,8 @@ class BrotliMiddleware(MiddlewareMixin):
     """
 
     def process_response(self, request: HttpRequest, response: HttpResponse) -> HttpResponse:
-        if (response.streaming or response.has_header('Content-Encoding') or
-                not self._accepts_brotli_encoding(request) or len(response.content) < MIN_LEN_FOR_RESPONSE_TO_PROCESS):
+        if (response.has_header('Content-Encoding') or
+                not self._accepts_brotli_encoding(request) or (not response.streaming and len(response.content) < MIN_LEN_FOR_RESPONSE_TO_PROCESS)):
             # ---------
             # 1) brotlipy doesn't support streaming compression, see: https://github.com/google/brotli/issues/191
             # 2) Avoid brotli if we've already got a content-encoding.
@@ -40,14 +40,24 @@ class BrotliMiddleware(MiddlewareMixin):
             return response
 
         patch_vary_headers(response, ('Accept-Encoding',))
-        compressed_content = brotli.compress(response.content)
 
-        # Return the compressed content only if it's actually shorter.
-        if len(compressed_content) >= len(response.content):
-            return response
+        if response.streaming:
+            compressed_content = self.compress_stream(response.streaming_content)
+            response.streaming_content = compressed_content
 
-        response.content = compressed_content
-        response['Content-Length'] = str(len(response.content))
+            # Delete the `Content-Length` header for streaming content, because
+            # we won't know the compressed size until we stream it.
+            del response['Content-Length']
+        else:
+            compressed_content = brotli.compress(response.content)
+
+            #Return the compressed content only if it's actually shorter.
+            if len(compressed_content) >= len(response.content):
+                return response
+
+            response.content = compressed_content
+            response['Content-Length'] = str(len(compressed_content))
+        
 
         if response.has_header('ETag'):
             response['ETag'] = re.sub(r"\"$", r";br\"", response['ETag'])
@@ -55,6 +65,13 @@ class BrotliMiddleware(MiddlewareMixin):
         response['Content-Encoding'] = 'br'
 
         return response
+
+    def compress_stream(self, streaming_content):
+        streaming_content = [line.decode('utf-8') for line in list(streaming_content)]
+        streaming_content = ''.join(streaming_content).encode()
+        streaming_content = map(lambda x: x, [brotli.compress(streaming_content)])
+
+        return streaming_content
 
     # noinspection PyMethodMayBeStatic
     def _accepts_brotli_encoding(self, request: HttpRequest) -> bool:
