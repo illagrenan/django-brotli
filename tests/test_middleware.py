@@ -2,11 +2,12 @@
 # ! python3
 
 import gzip
+from typing import Mapping, Optional
 from unittest import TestCase
 
 import brotli
+from django.http import StreamingHttpResponse
 from django.middleware.gzip import GZipMiddleware
-from typing import Mapping, Optional
 
 from django_brotli.middleware import BrotliMiddleware, MIN_LEN_FOR_RESPONSE_TO_PROCESS
 from .utils import UTF8_LOREM_IPSUM_IN_CZECH
@@ -58,6 +59,29 @@ class MiddlewareTestCase(TestCase):
 
         decompressed_response = brotli.decompress(brotli_response.content)  # type: bytes
         self.assertEqual(response_content, decompressed_response.decode(encoding='utf-8'))
+
+    def test_compress_streaming_response(self):
+        """
+        Compression is performed on responses with streaming content.
+        """
+        sequence = [b'a' * 500, b'b' * 200, b'a' * 300]
+
+        def get_stream_response():
+            resp = StreamingHttpResponse(sequence)
+            resp['Content-Type'] = 'text/html; charset=UTF-8'
+            return resp
+
+        fake_request = FakeRequestAcceptsBrotli()
+        fake_response = get_stream_response()
+
+        brotli_middleware = BrotliMiddleware()
+        brotli_response = brotli_middleware.process_response(fake_request, fake_response)
+
+        decompressed_response = brotli.decompress(b''.join(brotli_response.streaming_content))  # type: bytes
+
+        self.assertEqual(b''.join(sequence), decompressed_response)
+        self.assertEqual(brotli_response.get('Content-Encoding'), 'br')
+        self.assertFalse(brotli_response.has_header('Content-Length'))
 
     def test_etag_is_updated_if_present(self):
         fake_request = FakeRequestAcceptsBrotli()
