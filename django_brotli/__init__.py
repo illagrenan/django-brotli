@@ -2,4 +2,4 @@
 # ! python3
 
 
-__all__ = ['middleware']
+__all__ = ["middleware"]
