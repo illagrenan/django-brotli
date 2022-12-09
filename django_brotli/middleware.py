@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 # ! python3
 
+import os
 import re
 
 import brotli
@@ -14,8 +15,14 @@ except ImportError:
 
 RE_ACCEPT_ENCODING_BROTLI = re.compile(r"\bbr\b")
 MIN_LEN_FOR_RESPONSE_TO_PROCESS = 200
+BROTLI_MODE = getattr(brotli, os.environ.get("BROTLI_MODE", "MODE_GENERIC"))
+BROTLI_QUALITY = int(os.environ.get("BROTLI_QUALITY", 5))
 
 __all__ = ["BrotliMiddleware"]
+
+
+def compress(obj):
+    return brotli.compress(obj, BROTLI_MODE, BRODLI_QUALITY)
 
 
 # noinspection PyClassHasNoInit
@@ -56,7 +63,7 @@ class BrotliMiddleware(MiddlewareMixin):
             # we won't know the compressed size until we stream it.
             del response["Content-Length"]
         else:
-            compressed_content = brotli.compress(response.content)
+            compressed_content = compress(response.content)
 
             # Return the compressed content only if it's actually shorter.
             if len(compressed_content) >= len(response.content):
@@ -75,7 +82,7 @@ class BrotliMiddleware(MiddlewareMixin):
     def compress_stream(self, streaming_content):
         streaming_content = [line.decode("utf-8") for line in list(streaming_content)]
         streaming_content = "".join(streaming_content).encode()
-        streaming_content = map(lambda x: x, [brotli.compress(streaming_content)])
+        streaming_content = map(lambda x: x, [compress(streaming_content)])
 
         return streaming_content
 
