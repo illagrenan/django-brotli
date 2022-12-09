@@ -22,7 +22,7 @@ __all__ = ["BrotliMiddleware"]
 
 
 def compress(obj):
-    return brotli.compress(obj, BROTLI_MODE, BRODLI_QUALITY)
+    return brotli.compress(obj, BROTLI_MODE, BROTLI_QUALITY)
 
 
 # noinspection PyClassHasNoInit
