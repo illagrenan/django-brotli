@@ -40,9 +40,9 @@ class BrotliMiddleware(MiddlewareMixin):
             response.has_header("Content-Encoding")
             or not self._accepts_brotli_encoding(request)
             or (
-            not response.streaming
-            and len(response.content) < MIN_LEN_FOR_RESPONSE_TO_PROCESS
-        )
+                not response.streaming
+                and len(response.content) < MIN_LEN_FOR_RESPONSE_TO_PROCESS
+            )
         ):
             # ---------
             # 1) brotlipy doesn't support streaming compression, see: https://github.com/google/brotli/issues/191
