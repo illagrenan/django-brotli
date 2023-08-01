@@ -1,4 +1,4 @@
 # Requirements required by this package:
 
 brotli==1.0.9
-Django~=3.0
+Django==4.2.4
