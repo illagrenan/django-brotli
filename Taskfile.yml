@@ -7,7 +7,7 @@ env:
   PYTHONDONTWRITEBYTECODE: 1
 
 vars:
-  SOURCES: ./django_asgi_lifespan/ ./example/ ./tests/
+  SOURCES: ./django_brotli/ ./tests/
 
 tasks:
   test:
@@ -23,7 +23,7 @@ tasks:
   coverage:
     desc: Run coverage
     cmds:
-      - pytest --cov=./django_asgi_lifespan/ --cov-branch --cov-report=xml --cov-report=term-missing ./tests/
+      - pytest --cov=./django_brotli/ --cov-branch --cov-report=xml --cov-report=term-missing ./tests/
     silent: false
 
   clean:
