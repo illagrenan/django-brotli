@@ -41,7 +41,6 @@ tasks:
     desc: Check setup
     cmds:
       - mypy {{.SOURCES}}
-      - pyright ./example/
     silent: false
 
   ruff:
@@ -56,7 +55,7 @@ tasks:
       - task: mypy
       - task: ruff
       - task: isort_check
-      - task: black_check
+      - task: format_check
     silent: false
 
   isort:
@@ -71,16 +70,16 @@ tasks:
       - ruff check --select I,F401 --fix {{.SOURCES}}
     silent: false
 
-  black:
+  ruff_format:
     aliases:
       - fmt
-    desc: Format using black
+    desc: Format using ruff
     cmds:
       - ruff format {{.SOURCES}}
     silent: false
 
-  black_check:
-    desc: Check black formatting
+  format_check:
+    desc: Check ruff formatting
     cmds:
       - ruff format --check {{.SOURCES}}
     silent: false
@@ -89,7 +88,7 @@ tasks:
     desc: Check setup
     cmds:
       - task: isort
-      - task: black
+      - task: ruff
     silent: false
 
   doc:
@@ -113,7 +112,7 @@ tasks:
   test_install:
     desc: Try to install local dist
     vars:
-      PROJECT_NAME: django-asgi-lifespan
+      PROJECT_NAME: django-brotli
     env:
       PIP_DISABLE_PIP_VERSION_CHECK: 1
     deps: [ build ]
