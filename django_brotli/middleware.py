@@ -30,7 +30,8 @@ class BrotliMiddleware(MiddlewareMixin):
     """
     This middleware compresses content if the browser allows `brotli` compression.
     It sets the Vary header accordingly, so that caches will base their storage
-    on the Accept-Encoding header. Code of this middleware is based on Django's `GZipMiddleware`.
+    on the Accept-Encoding header. Code of this middleware is based
+    on Django's `GZipMiddleware`.
     """
 
     def process_response(
@@ -45,7 +46,8 @@ class BrotliMiddleware(MiddlewareMixin):
             )
         ):
             # ---------
-            # 1) brotlipy doesn't support streaming compression, see: https://github.com/google/brotli/issues/191
+            # 1) brotlipy doesn't support streaming compression,
+            #       see: https://github.com/google/brotli/issues/191
             # 2) Avoid brotli if we've already got a content-encoding.
             # 3) Client doesn't support brotli
             # 4) It's not worth attempting to compress really short responses.
@@ -82,7 +84,7 @@ class BrotliMiddleware(MiddlewareMixin):
     def compress_stream(self, streaming_content):
         streaming_content = [line.decode("utf-8") for line in list(streaming_content)]
         streaming_content = "".join(streaming_content).encode()
-        streaming_content = map(lambda x: x, [compress(streaming_content)])
+        streaming_content = (x for x in [compress(streaming_content)])
 
         return streaming_content
 
