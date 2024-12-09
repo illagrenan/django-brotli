@@ -1,0 +1,116 @@
+[project]
+name = "django-brotli"
+requires-python = ">=3.10, <3.14"
+
+[tool.poetry]
+name = "django-brotli"
+version = "0.2.0"
+description = "Middleware that compresses response using brotli algorithm."
+authors = ["Václav Dohnal <vaclav.dohnal@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3 :: Only",
+    "Operating System :: OS Independent",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 4",
+    "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.1"
+]
+packages = [
+    { include = "django_brotli" },
+    { include = "tests", format = "sdist" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.10 || ^3.11 || ^3.12 || ^3.13"
+brotli = "^1.1.0"
+django = "^4.1.5"
+
+[tool.poetry.group.dev.dependencies]
+# Formatting & Linting
+mypy = "^1.13.0"
+ruff = "^0.8.2"
+pyright = "^1.1.390"
+
+# Releases
+twine = "^6.0.1"
+bump-my-version = "^0.28.1"
+
+# Tests
+pytest = "^8.3.4"
+pytest-cov = "^6.0.0"
+pytest-asyncio = "^0.24.0"
+pytest-django = "^4.9.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+norecursedirs = [".git", "__pycache__"]
+DJANGO_SETTINGS_MODULE = "tests.django_test_application.settings"
+addopts = "--verbose --color=yes --showlocals -r A --tb=auto -s -x"
+python_files = [
+    "tests.py",
+    "test_*.py",
+    "*_tests.py"
+]
+junit_suite_name = "django-asgi-lifespan"
+junit_family = "xunit2"
+log_cli = true
+log_cli_level = "DEBUG"
+log_cli_format = '%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)'
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+asyncio_mode = "auto"
+testpaths = [
+    "./tests/"
+]
+
+[tool.ruff.lint]
+select = [
+    "E", # pycodestyle
+    "F", # Pyflakes
+    "B", # flake8-bugbear
+    "SIM", # flake8-simplify
+    "I", # isort
+    "RUF", # ruff
+    "LOG", # flake8-logging
+    "ASYNC", # flake8-async
+    "S", # flake8-bandit
+    "BLE", # flake8-blind-except
+    "A", # flake8-builtins
+    "C4", # flake8-comprehensions
+    "FA", # flake8-future-annotations
+    "ISC", # flake8-implicit-str-concat
+    "ICN", # flake8-import-conventions
+    "G", # flake8-logging-format
+    "PIE", # flake8-pie
+    "ERA", # eradicate
+    "PL", # pylint
+    "PERF", # perflint
+]
+ignore = [
+    "TRY003",
+    "S101",
+    "ISC001",
+]
+
+[tool.mypy]
+python_version = "3.10"
+check_untyped_defs = true
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
