@@ -2,7 +2,7 @@
 # ! python3
 
 import gzip
-from typing import Mapping, Optional
+from typing import MutableMapping, Optional
 from unittest import TestCase
 
 import brotli
@@ -27,7 +27,7 @@ class FakeResponse:
     def __init__(
         self,
         content: str,
-        headers: Optional[Mapping[str, str]] = None,
+        headers: Optional[MutableMapping[str, str]] = None,
         streaming: Optional[bool] = None,
     ):
         self.content = content.encode(encoding="utf-8")
@@ -60,9 +60,7 @@ class MiddlewareTestCase(TestCase):
             fake_request, fake_response
         )
 
-        decompressed_response = brotli.decompress(
-            brotli_response.content
-        )  # type: bytes
+        decompressed_response = brotli.decompress(brotli_response.content)  # type: bytes
         self.assertEqual(
             response_content, decompressed_response.decode(encoding="utf-8")
         )
@@ -109,9 +107,7 @@ class MiddlewareTestCase(TestCase):
             fake_request, fake_response
         )
 
-        decompressed_response = brotli.decompress(
-            brotli_response.content
-        )  # type: bytes
+        decompressed_response = brotli.decompress(brotli_response.content)  # type: bytes
         self.assertEqual(
             response_content, decompressed_response.decode(encoding="utf-8")
         )
