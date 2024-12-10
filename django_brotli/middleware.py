@@ -18,7 +18,14 @@ MIN_LEN_FOR_RESPONSE_TO_PROCESS = 200
 BROTLI_MODE = getattr(brotli, os.environ.get("BROTLI_MODE", "MODE_GENERIC"))
 BROTLI_QUALITY = int(os.environ.get("BROTLI_QUALITY", 4))
 
-__all__ = ["BrotliMiddleware"]
+__all__ = [
+    "BROTLI_MODE",
+    "BROTLI_QUALITY",
+    "MIN_LEN_FOR_RESPONSE_TO_PROCESS",
+    "RE_ACCEPT_ENCODING_BROTLI",
+    "BrotliMiddleware",
+    "compress",
+]
 
 
 def compress(obj):

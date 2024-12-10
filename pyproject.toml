@@ -4,7 +4,7 @@ requires-python = ">=3.10, <3.14"
 
 [tool.poetry]
 name = "django-brotli"
-version = "0.2.1"
+version = "0.3.0"
 homepage = "https://github.com/illagrenan/django-brotli"
 description = "Middleware that compresses response using brotli algorithm."
 authors = ["Václav Dohnal <vaclav.dohnal@gmail.com>"]
