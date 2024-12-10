@@ -23,8 +23,8 @@ In November 2016 is brotli supported by Firefox, Chrome, Android Browser and Ope
 
 **This software is in alpha version and should not be used in production.**
 
-- Supported Python versions are: `3.5`, `3.6` and `3.7`.
-- Supported Django versions are: `1.11.x` (LTS), `2.0.x` and `2.1.x` (LTS).
+- Supported Python versions are: `">=3.10, <3.14"`.
+- Supported Django versions are: `>=4,<6`.
 
 ```shell
 pip install --upgrade django-brotli
