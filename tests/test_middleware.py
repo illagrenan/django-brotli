@@ -130,7 +130,7 @@ def test_compress_streaming_response(
     brotli_response = brotli_middleware.process_response(fake_request, fake_response)
 
     # Collect all streaming content
-    compressed_content = b"".join(brotli_response.streaming_content)  # type: ignore
+    compressed_content = b"".join(brotli_response.streaming_content)
     decompressed_response = brotli.decompress(compressed_content)
 
     assert b"".join(streaming_sequence) == decompressed_response
