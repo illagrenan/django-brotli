@@ -53,6 +53,7 @@ pytest = "^8.3.4"
 pytest-cov = "^6.0.0"
 pytest-asyncio = "^0.24.0"
 pytest-django = "^4.9.0"
+faker = "^33.1.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -61,14 +62,13 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 minversion = "8.0"
 norecursedirs = [".git", "__pycache__"]
-DJANGO_SETTINGS_MODULE = "tests.django_test_application.settings"
 addopts = "--verbose --color=yes --showlocals -r A --tb=auto -s -x"
 python_files = [
     "tests.py",
     "test_*.py",
     "*_tests.py"
 ]
-junit_suite_name = "django-asgi-lifespan"
+junit_suite_name = "django-brotli"
 junit_family = "xunit2"
 log_cli = true
 log_cli_level = "DEBUG"
