@@ -1,21 +1,21 @@
 import gzip
 from collections.abc import Callable
-from typing import MutableMapping, Optional
+from typing import ClassVar, MutableMapping, Optional
 
 import brotli
 import pytest
 from django.http import HttpRequest, HttpResponse, StreamingHttpResponse
 from faker import Faker
 
-from django_brotli.middleware import BrotliMiddleware, MIN_LEN_FOR_RESPONSE_TO_PROCESS
+from django_brotli.middleware import MIN_LEN_FOR_RESPONSE_TO_PROCESS, BrotliMiddleware
 
 
 class FakeRequestAcceptsBrotli:
-    META: dict[str, str] = {"HTTP_ACCEPT_ENCODING": "gzip, deflate, sdch, br"}
+    META: ClassVar[dict[str, str]] = {"HTTP_ACCEPT_ENCODING": "gzip, deflate, sdch, br"}
 
 
 class FakeLegacyRequest:
-    META: dict[str, str] = {"HTTP_ACCEPT_ENCODING": "gzip, deflate, sdch"}
+    META: ClassVar[dict[str, str]] = {"HTTP_ACCEPT_ENCODING": "gzip, deflate, sdch"}
 
 
 class FakeResponse:

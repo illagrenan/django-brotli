@@ -18,6 +18,6 @@ def pytest_configure():
         MIDDLEWARE=[
             "django_brotli.middleware.BrotliMiddleware",
         ],
-        SECRET_KEY="not-a-real-key",
+        SECRET_KEY="not-a-real-key",  # noqa: S106
         ALLOWED_HOSTS=["*"],
     )
