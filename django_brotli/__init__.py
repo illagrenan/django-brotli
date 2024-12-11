@@ -8,9 +8,9 @@ from __future__ import annotations
 from .middleware import (
     BROTLI_MODE,
     BROTLI_QUALITY,
+    MIN_LEN_FOR_RESPONSE_TO_PROCESS,
     BrotliMiddleware,
     compress,
-    MIN_LEN_FOR_RESPONSE_TO_PROCESS,
 )
 
 __author__ = """Václav Dohnal"""
