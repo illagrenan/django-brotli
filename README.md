@@ -12,7 +12,7 @@
 * Documentation: <https://illagrenan.github.io/django-brotli>
 * PyPI: <https://pypi.org/project/django-brotli/>
 * License: [MIT](https://choosealicense.com/licenses/mit/)
-*
+
 ## Introduction
 
 This project consists of `BrotliMiddleware` which works the same as Django `GZipMiddleware` ([Docs](https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.middleware.gzip)/[Source](https://github.com/django/django/blob/master/django/middleware/gzip.py#L10-L52)). `BrotliMiddleware` will compress content of HTTP response using brotli algorithm (Brotli Compressed Data Format is defined in [RFC 7932](https://www.ietf.org/rfc/rfc7932.txt)).
@@ -57,4 +57,4 @@ MIDDLEWARE = [
 
 The MIT License (MIT)
 
-Copyright (c) 2016–2019 Vašek Dohnal (@illagrenan)
+Copyright (c) 2016—2024 Václav Dohnal (@illagrenan)
