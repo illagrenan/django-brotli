@@ -9,7 +9,6 @@
 [![Build Status](https://github.com/illagrenan/django-brotli/actions/workflows/development.yml/badge.svg)](https://github.com/illagrenan/django-brotli/actions/workflows/development.yml)
 [![codecov](https://codecov.io/gh/illagrenan/django-brotli/branch/main/graphs/badge.svg)](https://codecov.io/github/illagrenan/django-brotli)
 
-* Documentation: <https://illagrenan.github.io/django-brotli>
 * PyPI: <https://pypi.org/project/django-brotli/>
 * License: [MIT](https://choosealicense.com/licenses/mit/)
 
@@ -24,7 +23,13 @@ In November 2016 is brotli supported by Firefox, Chrome, Android Browser and Ope
 - Supported Python versions are: `">=3.10, <3.14"`.
 - Supported Django versions are: `>=4,<6`.
 
-```shell
+```console
+poetry add django-brotli@latest
+```
+
+*or*
+
+```console
 pip install --upgrade django-brotli
 ```
 
