@@ -47,14 +47,11 @@ MIDDLEWARE = [
 ## Contributing
 
 1. Clone this repository (`git clone ...`)
-2. Create virtualenv
-3. Install package dependencies: `pip install --upgrade -r requirements.txt`
-4. Change some code
-5. Run tests: in project root simply execute `pytest`
-6. Submit PR :)
+2. Install package dependencies: `poetry install --with dev -v`
+3. Change some code
+4. Run tests: in project root simply execute `pytest`
+5. Submit PR :)
 
 ## License
 
-The MIT License (MIT)
-
-Copyright (c) 2016—2024 Václav Dohnal (@illagrenan)
+[The MIT License (MIT)](./LICENSE)
