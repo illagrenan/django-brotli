@@ -28,7 +28,7 @@ __all__ = [
 ]
 
 
-def compress(obj):
+def compress(obj: bytes) -> bytes:
     return brotli.compress(obj, BROTLI_MODE, BROTLI_QUALITY)
 
 

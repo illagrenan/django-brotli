@@ -30,6 +30,7 @@ classifiers = [
 ]
 packages = [
     { include = "django_brotli" },
+    { include = "django_brotli/py.typed" },
     { include = "tests", format = "sdist" },
 ]
 

@@ -9,10 +9,9 @@
 [![Build Status](https://github.com/illagrenan/django-brotli/actions/workflows/development.yml/badge.svg)](https://github.com/illagrenan/django-brotli/actions/workflows/development.yml)
 [![codecov](https://codecov.io/gh/illagrenan/django-brotli/branch/main/graphs/badge.svg)](https://codecov.io/github/illagrenan/django-brotli)
 
-* Documentation: <https://illagrenan.github.io/django-brotli>
 * PyPI: <https://pypi.org/project/django-brotli/>
 * License: [MIT](https://choosealicense.com/licenses/mit/)
-*
+
 ## Introduction
 
 This project consists of `BrotliMiddleware` which works the same as Django `GZipMiddleware` ([Docs](https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.middleware.gzip)/[Source](https://github.com/django/django/blob/master/django/middleware/gzip.py#L10-L52)). `BrotliMiddleware` will compress content of HTTP response using brotli algorithm (Brotli Compressed Data Format is defined in [RFC 7932](https://www.ietf.org/rfc/rfc7932.txt)).
@@ -21,12 +20,16 @@ In November 2016 is brotli supported by Firefox, Chrome, Android Browser and Ope
 
 ## Installation
 
-**This software is in alpha version and should not be used in production.**
-
 - Supported Python versions are: `">=3.10, <3.14"`.
 - Supported Django versions are: `>=4,<6`.
 
-```shell
+```console
+poetry add django-brotli@latest
+```
+
+*or*
+
+```console
 pip install --upgrade django-brotli
 ```
 
@@ -47,14 +50,11 @@ MIDDLEWARE = [
 ## Contributing
 
 1. Clone this repository (`git clone ...`)
-2. Create virtualenv
-3. Install package dependencies: `pip install --upgrade -r requirements.txt`
-4. Change some code
-5. Run tests: in project root simply execute `pytest`
-6. Submit PR :)
+2. Install package dependencies: `poetry install --with dev -v`
+3. Change some code
+4. Run tests: in project root simply execute `pytest`
+5. Submit PR :)
 
 ## License
 
-The MIT License (MIT)
-
-Copyright (c) 2016–2019 Vašek Dohnal (@illagrenan)
+[The MIT License (MIT)](./LICENSE)
