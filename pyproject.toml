@@ -42,7 +42,7 @@ django = ">=4,<6"
 [tool.poetry.group.dev.dependencies]
 # Formatting & Linting
 mypy = "^1.13.0"
-ruff = "^0.8.2"
+ruff = ">=0.8.2,<0.10.0"
 pyright = "^1.1.390"
 
 # Releases
