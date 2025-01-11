@@ -62,24 +62,9 @@ jobs:
         run: |
           poetry install -vv --no-interaction
 
-      - name: Load cached Django
-        id: cached-django
-        uses: actions/cache@v4
-        with:
-          path: .venv
-          key: django-${{ runner.os }}-${{ matrix.python-version }}-${{ matrix.django-versions }}
-
       - name: Install Django
-        if: steps.cached-django.outputs.cache-hit != 'true'
         run: |
           poetry run pip install --upgrade django==${{ matrix.django-versions }}
-
-      - name: Cache Task installation
-        id: cached-task
-        uses: actions/cache@v4
-        with:
-          path: ~/go/bin
-          key: task-${{ runner.os }}-3.4.x
 
       - name: Install Task
         uses: arduino/setup-task@v2
