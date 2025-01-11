@@ -23,10 +23,15 @@ jobs:
         with:
           python-version: ${{ matrix.python-versions }}
 
-      - name: Install dependencies
+      - name: Install Poetry
+        env:
+          POETRY_VERSION: "2.0.0"
         run: |
           python -m pip install --no-input --upgrade pip
-          pip install poetry
+          pip install --no-input poetry==${{ env.POETRY_VERSION }}
+
+      - name: Install dependencies
+        run: |
           poetry install -vv -n
 
       - name: Install Task
