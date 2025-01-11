@@ -57,13 +57,7 @@ jobs:
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: |
-          poetry install -vv --no-root
-
-      - uses: actions/cache@v4
-        name: Define a cache for the virtual environment based on the dependencies lock file
-        with:
-          path: ./.venv
-          key: venv-${{ matrix.python-versions }}-${{ hashFiles('poetry.lock') }}
+          poetry install -vv --no-interaction
 
       - name: Install Django
         run: |
