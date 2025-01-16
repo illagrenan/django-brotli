@@ -3,20 +3,16 @@
 
 import os
 import re
+from typing import Any, Callable, Final, Union
 
 import brotli
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseBase
 from django.utils.cache import patch_vary_headers
 
-try:
-    from django.utils.deprecation import MiddlewareMixin
-except ImportError:
-    MiddlewareMixin = object
-
-RE_ACCEPT_ENCODING_BROTLI = re.compile(r"\bbr\b")
-MIN_LEN_FOR_RESPONSE_TO_PROCESS = 200
-BROTLI_MODE = getattr(brotli, os.environ.get("BROTLI_MODE", "MODE_GENERIC"))
-BROTLI_QUALITY = int(os.environ.get("BROTLI_QUALITY", 4))
+RE_ACCEPT_ENCODING_BROTLI: Final = re.compile(r"\bbr\b")
+MIN_LEN_FOR_RESPONSE_TO_PROCESS: Final = 200
+BROTLI_MODE: Final = getattr(brotli, os.environ.get("BROTLI_MODE", "MODE_GENERIC"))
+BROTLI_QUALITY: Final = int(os.environ.get("BROTLI_QUALITY", 4))
 
 __all__ = [
     "BROTLI_MODE",
@@ -32,8 +28,7 @@ def compress(obj: bytes) -> bytes:
     return brotli.compress(obj, BROTLI_MODE, BROTLI_QUALITY)
 
 
-# noinspection PyClassHasNoInit
-class BrotliMiddleware(MiddlewareMixin):
+class BrotliMiddleware:
     """
     This middleware compresses content if the browser allows `brotli` compression.
     It sets the Vary header accordingly, so that caches will base their storage
@@ -41,9 +36,22 @@ class BrotliMiddleware(MiddlewareMixin):
     on Django's `GZipMiddleware`.
     """
 
+    sync_capable = True
+    async_capable = False  # brotli doesn't support async compression
+
+    def __init__(
+        self,
+        get_response: Callable[[HttpRequest], Union[HttpResponse, HttpResponseBase]],
+    ) -> None:
+        self.get_response = get_response
+
+    def __call__(self, request: HttpRequest) -> HttpResponseBase:
+        response = self.get_response(request)
+        return self.process_response(request, response)
+
     def process_response(
-        self, request: HttpRequest, response: HttpResponse
-    ) -> HttpResponse:
+        self, request: HttpRequest, response: HttpResponseBase
+    ) -> HttpResponseBase:
         if (
             response.has_header("Content-Encoding")
             or not self._accepts_brotli_encoding(request)
@@ -88,7 +96,7 @@ class BrotliMiddleware(MiddlewareMixin):
 
         return response
 
-    def compress_stream(self, streaming_content):
+    def compress_stream(self, streaming_content: Any) -> Any:
         streaming_content = [line.decode("utf-8") for line in list(streaming_content)]
         streaming_content = "".join(streaming_content).encode()
         streaming_content = (x for x in [compress(streaming_content)])
