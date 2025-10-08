@@ -5,7 +5,7 @@ license = "MIT"
 authors = [
     { name = "Václav Dohnal", email = "vaclav.dohnal@gmail.com" },
 ]
-requires-python = ">=3.10, <3.14"
+requires-python = ">=3.10, <3.15"
 dynamic = [ "classifiers", "version", "readme", "dependencies" ]
 
 [project.urls]
@@ -15,7 +15,7 @@ documentation = "https://github.com/illagrenan/django-brotli"
 "Bug Tracker" = "https://github.com/illagrenan/django-brotli/issues"
 
 [tool.poetry]
-version = "0.3.0"
+version = "0.3.1"
 readme = "README.md"
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -27,13 +27,16 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: 3 :: Only",
     "Operating System :: OS Independent",
     "Environment :: Web Environment",
     "Framework :: Django",
     "Framework :: Django :: 4",
     "Framework :: Django :: 5.0",
-    "Framework :: Django :: 5.1"
+    "Framework :: Django :: 5.1",
+    "Framework :: Django :: 5.2",
+    "Framework :: Django :: 6.0"
 ]
 packages = [
     { include = "django_brotli" },
@@ -42,9 +45,9 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.10, <3.14"
+python = ">=3.10, <3.15"
 brotli = "^1.1"
-django = ">=4,<6"
+django = ">=4,<6.1"
 
 [tool.poetry.group.dev.dependencies]
 # Formatting & Linting
