@@ -5,6 +5,7 @@ from typing import ClassVar, MutableMapping, Optional
 import brotli
 import pytest
 from django.http import HttpRequest, HttpResponse, StreamingHttpResponse
+from django.middleware.gzip import GZipMiddleware
 from faker import Faker
 
 from django_brotli.middleware import MIN_LEN_FOR_RESPONSE_TO_PROCESS, BrotliMiddleware
@@ -190,8 +191,6 @@ def test_middleware_wont_compress_if_response_is_already_compressed(
     get_response: Callable[[HttpRequest], HttpResponse],
     sample_text: str,
 ) -> None:
-    from django.middleware.gzip import GZipMiddleware
-
     fake_response = FakeResponse(content=sample_text)
 
     brotli_middleware = BrotliMiddleware(get_response=get_response)

@@ -16,7 +16,7 @@ except ImportError:
 RE_ACCEPT_ENCODING_BROTLI = re.compile(r"\bbr\b")
 MIN_LEN_FOR_RESPONSE_TO_PROCESS = 200
 BROTLI_MODE = getattr(brotli, os.environ.get("BROTLI_MODE", "MODE_GENERIC"))
-BROTLI_QUALITY = int(os.environ.get("BROTLI_QUALITY", 4))
+BROTLI_QUALITY = int(os.environ.get("BROTLI_QUALITY", "4"))
 
 __all__ = [
     "BROTLI_MODE",
