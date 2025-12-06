@@ -21,9 +21,9 @@ jobs:
           - python-versions: "3.13"
             django-versions: "5.0.*"
           - python-versions: "3.13"
-            django-versions: "5.2.*
+            django-versions: "5.2.*"
           - python-versions: "3.13"
-            django-versions: "6.0.*
+            django-versions: "6.0.*"
           - python-versions: "3.14"
             django-versions: "5.1.*"
           - python-versions: "3.14"
