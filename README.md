@@ -4,7 +4,7 @@
 [![pypi](https://img.shields.io/badge/code%20style-The%20Ruff%20Formatter-000000.svg)](https://docs.astral.sh/ruff/formatter/)
 [![pypi](https://img.shields.io/pypi/v/django-brotli.svg)](https://pypi.org/project/django-brotli/)
 [![Python version](https://img.shields.io/pypi/pyversions/django-brotli.svg?logo=python&logoColor=white&label=python)](https://pypi.org/project/django-brotli/)
-![Supported Django](https://img.shields.io/badge/django%20versions-%5E4.2%20||%20%5E5.0.3-blue.svg?logo=django&logoColor=white)
+![Supported Django](https://img.shields.io/badge/django%20versions-%5E4.2%20||%20%5E5.0%20||%20%5E6.0-blue.svg?logo=django&logoColor=white)
 <br>
 [![Build Status](https://github.com/illagrenan/django-brotli/actions/workflows/development.yml/badge.svg)](https://github.com/illagrenan/django-brotli/actions/workflows/development.yml)
 [![codecov](https://codecov.io/gh/illagrenan/django-brotli/branch/main/graphs/badge.svg)](https://codecov.io/github/illagrenan/django-brotli)
@@ -20,8 +20,8 @@ In November 2016 is brotli supported by Firefox, Chrome, Android Browser and Ope
 
 ## Installation
 
-- Supported Python versions are: `">=3.10, <3.14"`.
-- Supported Django versions are: `>=4,<6`.
+- Supported Python versions are: `">=3.10, <3.15"`.
+- Supported Django versions are: `>=4,<7`.
 
 ```console
 poetry add django-brotli@latest
