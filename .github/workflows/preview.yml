@@ -46,10 +46,6 @@ jobs:
         run: |
           poetry install -vv --no-interaction
 
-      - name: Install Django
-        run: |
-          poetry run pip install --upgrade django==${{ matrix.django-versions }}
-
       - name: Install Task
         uses: arduino/setup-task@v2
 
