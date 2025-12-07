@@ -15,7 +15,7 @@ documentation = "https://github.com/illagrenan/django-brotli"
 "Bug Tracker" = "https://github.com/illagrenan/django-brotli/issues"
 
 [tool.poetry]
-version = "0.3.1"
+version = "0.4.0"
 readme = "README.md"
 classifiers = [
     "Development Status :: 4 - Beta",

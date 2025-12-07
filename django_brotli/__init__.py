@@ -15,7 +15,7 @@ from .middleware import (
 
 __author__ = """Václav Dohnal"""
 __email__ = "vaclav.dohnal@gmail.com"
-__version__ = "0.3.1"
+__version__ = "0.4.0"
 
 
 __all__ = [
