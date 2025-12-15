@@ -51,7 +51,7 @@ django = ">=4,<7"
 
 [tool.poetry.group.dev.dependencies]
 # Formatting & Linting
-mypy = "^1.19.0"
+mypy = "^1.19.1"
 ruff = "^0.14.8"
 pyright = "^1.1.407"
 
