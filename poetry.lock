@@ -204,18 +204,18 @@ files = [
 
 [[package]]
 name = "bump-my-version"
-version = "1.2.4"
+version = "1.2.6"
 description = "Version bump your Python project"
 optional = false
 python-versions = ">=3.8"
 groups = ["dev"]
 files = [
-    {file = "bump_my_version-1.2.4-py3-none-any.whl", hash = "sha256:b60ac52c8972c5a7e1e478d0334015a993ba5c27fad1b04bde558d25c667b0f5"},
-    {file = "bump_my_version-1.2.4.tar.gz", hash = "sha256:998abb4f3774cf96137a77034a5a12a722b109b26a3afa044ec14622a0180fa3"},
+    {file = "bump_my_version-1.2.6-py3-none-any.whl", hash = "sha256:a2f567c10574a374b81a9bd6d2bd3cb2ca74befe5c24c3021123773635431659"},
+    {file = "bump_my_version-1.2.6.tar.gz", hash = "sha256:1f2f0daa5d699904e9739be8efb51c4c945461bad83cd4da4c89d324d9a18343"},
 ]
 
 [package.dependencies]
-click = "<8.2.2"
+click = "<8.4"
 httpx = ">=0.28.1"
 pydantic = ">=2.0.0"
 pydantic-settings = "*"
@@ -2028,4 +2028,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10, <3.15"
-content-hash = "67c7b9298297d3a5d86d8f694d039964926896d7fb618eeeb58e21fa985cacd4"
+content-hash = "555dc4c728c7ccd0743f630e5a96530bc57feb7988316b7564553e0881cf4464"
