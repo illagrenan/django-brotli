@@ -35,6 +35,10 @@
 *.bmpr  binary
 *.h5    binary
 
+# Generated files
+# ================
+uv.lock     linguist-generated=true
+
 # LFS
 # ===
 *.whl filter=lfs diff=lfs merge=lfs -text

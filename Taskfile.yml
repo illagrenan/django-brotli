@@ -17,13 +17,13 @@ tasks:
       - pytests
     desc: Run pytests
     cmds:
-      - poetry run pytest
+      - uv run pytest
     silent: false
 
   coverage:
     desc: Run coverage
     cmds:
-      - pytest --cov=./django_brotli/ --cov-branch --cov-report=xml --cov-report=term-missing ./tests/
+      - uv run pytest --cov=./django_brotli/ --cov-branch --cov-report=xml --cov-report=term-missing ./tests/
     silent: false
 
   clean:
@@ -38,86 +38,60 @@ tasks:
     silent: false
 
   mypy:
-    desc: Check setup
+    desc: Type check with mypy and pyright
     cmds:
-      - mypy {{.SOURCES}}
+      - uv run mypy {{.SOURCES}}
+      - uv run pyright {{.SOURCES}}
     silent: false
 
   ruff:
     desc: Run ruff
     cmds:
-      - ruff check {{.SOURCES}}
+      - uv run ruff check {{.SOURCES}}
     silent: false
 
   lint:
-    desc: Check setup
+    desc: Run linters and type checks
     cmds:
       - task: mypy
       - task: ruff
-      - task: isort_check
       - task: format_check
     silent: false
 
-  isort:
-    desc: Optimize imports
-    cmds:
-      - ruff check --select I,F401 {{.SOURCES}}
-    silent: false
-
-  isort_check:
-    desc: Check isort
-    cmds:
-      - ruff check --select I,F401 --fix {{.SOURCES}}
-    silent: false
-
-  ruff_format:
+  format:
     aliases:
       - fmt
-    desc: Format using ruff
+    desc: Fix lint issues and format code
     cmds:
-      - ruff format {{.SOURCES}}
+      - uv run ruff check --fix {{.SOURCES}}
+      - uv format -- {{.SOURCES}}
     silent: false
 
   format_check:
-    desc: Check ruff formatting
+    desc: Check code formatting
     cmds:
-      - ruff format --check {{.SOURCES}}
-    silent: false
-
-  format:
-    desc: Check setup
-    cmds:
-      - task: isort
-      - task: ruff
-    silent: false
-
-  doc:
-    desc: Check distribution
-    cmds:
-      - mkdocs build
+      - uv format --check -- {{.SOURCES}}
     silent: false
 
   build:
     desc: Build the package
     cmds:
-      - poetry build
+      - uv build
     silent: false
 
   build_check:
-    desc: Check distribution
+    desc: Check built distributions with Twine
     cmds:
-      - twine check dist/*
+      - uv run twine check dist/*
     silent: false
 
   test_install:
     desc: Try to install local dist
     vars:
       PROJECT_NAME: django-brotli
-    env:
-      PIP_DISABLE_PIP_VERSION_CHECK: 1
     deps: [ build ]
     cmds:
-      - pip uninstall {{.PROJECT_NAME}} --yes
-      - pip install --no-cache-dir --no-index --find-links=file:./dist {{.PROJECT_NAME}}
-      - pip uninstall {{.PROJECT_NAME}} --yes
+      - uv pip uninstall {{.PROJECT_NAME}}
+      - uv pip install --no-cache-dir --no-index --find-links=file:./dist {{.PROJECT_NAME}}
+      - uv pip uninstall {{.PROJECT_NAME}}
     silent: false

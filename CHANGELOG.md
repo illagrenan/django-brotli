@@ -6,6 +6,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-11-18
+
+[:material-github: Github release](https://github.com/illagrenan/django-brotli/releases/tag/v0.5.0)
+
+### Added
+
+- Add support for Python 3.15 and Django 6.1.
+
+### Changed
+
+- Replace Poetry with uv (`uv_build` backend).
+- CI publishes with PyPI Trusted Publishing and pins actions to commit SHAs.
+- Type check with `mypy --strict`, `django-stubs` and pyright.
+
+### Fixed
+
+- Binary streaming responses no longer fail on UTF-8 decoding.
+- Async streaming responses are passed through uncompressed instead of failing.
+- `ETag` gets the intended `;br` suffix (`"foo;br"`, was `"foo;br\"`).
+- `Vary: Accept-Encoding` is set also when the client does not accept brotli.
+- Responses that are neither `HttpResponse` nor `StreamingHttpResponse` are passed through instead of failing.
+
+### Removed
+
+- Support for end-of-life Python 3.10 and Django 4.2, 5.0 and 5.1.
+
 ## [0.4.0] - 2025-12-07
 
 [:material-github: Github release](https://github.com/illagrenan/django-brotli/releases/tag/v0.4.0)

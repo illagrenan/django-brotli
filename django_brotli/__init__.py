@@ -1,9 +1,4 @@
-# -*- encoding: utf-8 -*-
-# ! python3
-
 """Middleware that compresses response using brotli algorithm."""
-
-from __future__ import annotations
 
 from .middleware import (
     BROTLI_MODE,
@@ -15,7 +10,7 @@ from .middleware import (
 
 __author__ = """Václav Dohnal"""
 __email__ = "vaclav.dohnal@gmail.com"
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 
 
 __all__ = [

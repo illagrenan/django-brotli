@@ -5,65 +5,73 @@ on:
     branches: [ "master" ]
   workflow_dispatch:
 
-jobs:
-  publish_dev_build:
-    name: Preview the package
-    runs-on: ubuntu-latest
+permissions:
+  contents: read
 
-    strategy:
-      matrix:
-        python-versions: [ "3.14" ]
+jobs:
+  build:
+    name: Build the preview package
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          python-version: ${{ matrix.python-versions }}
+          persist-credentials: false
 
-      - name: Install Poetry
-        run: |
-          pipx install poetry==2.0.0
-          poetry config virtualenvs.create true
-          poetry config virtualenvs.in-project true
-
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ matrix.python-versions }}-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            venv-${{ runner.os }}-${{ matrix.python-versions }}-
+          python-version: "3.14"
+          enable-cache: false
 
       - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: |
-          poetry install -vv --no-interaction
+          uv sync --locked
 
       - name: Install Task
-        uses: arduino/setup-task@v2
+        uses: arduino/setup-task@c0bc642852239c2689f73f4ea6459c29405f3c52 # v3.0.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run linters
         run: |
-          poetry run task lint
+          uv run task lint
 
       - name: Run unittests
         run: |
-          poetry run task coverage
+          uv run task test
 
       - name: Build wheels and source tarball
         run: |
-          poetry version $(poetry version --short)-dev.$GITHUB_RUN_NUMBER
-          poetry version --short
-          poetry build
+          uv version --frozen "$(uv version --short).dev$GITHUB_RUN_NUMBER"
+          uv build
 
-      - name: publish to Test PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          user: __token__
-          password: ${{ secrets.TEST_PYPI_API_TOKEN}}
+          name: dist
+          path: dist/
+
+  publish:
+    name: Publish to Test PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/django-brotli
+    permissions:
+      id-token: write
+
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to Test PyPI
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
+        with:
           repository-url: https://test.pypi.org/legacy/
           skip-existing: true
