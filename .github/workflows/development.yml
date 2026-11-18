@@ -2,76 +2,100 @@ name: "Development"
 
 on:
   push:
-  pull_request:
     branches: [ "master" ]
+  pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  test:
-    name: Run tests
-
-    strategy:
-      matrix:
-        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14", "3.15" ]
-        django-version: [ "4.2.*", "5.0.*", "5.1.*", "5.2.*", "6.0.*", "6.1.*"]
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
-        exclude:
-          - python-version: "3.10"
-            django-version: "6.0.*"
-          - python-version: "3.10"
-            django-version: "6.1.*"
-          - python-version: "3.11"
-            django-version: "6.0.*"
-          - python-version: "3.11"
-            django-version: "6.1.*"
-          - python-version: "3.13"
-            django-version: "4.2.*"
-          - python-version: "3.13"
-            django-version: "5.0.*"
-          - python-version: "3.14"
-            django-version: "4.2.*"
-          - python-version: "3.14"
-            django-version: "5.0.*"
-          - python-version: "3.14"
-            django-version: "5.1.*"
-          - python-version: "3.15"
-            django-version: "4.2.*"
-          - python-version: "3.15"
-            django-version: "5.0.*"
-          - python-version: "3.15"
-            django-version: "5.1.*"
-          - python-version: "3.15"
-            django-version: "5.2.*"
-          - python-version: "3.15"
-            django-version: "6.0.*"
-    defaults:
-      run:
-        shell: bash
-    runs-on: ${{ matrix.os }}
-
-    env:
-      # `uv run` syncs the environment from uv.lock before running, which would
-      # reinstall the locked Django over the matrix version installed below.
-      UV_NO_SYNC: "1"
+  lint:
+    name: Lint and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
-
-      - name: Setup Python
-        id: setup-python
-        uses: actions/setup-python@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          python-version: ${{ matrix.python-version }}
+          persist-credentials: false
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
+          python-version: "3.14"
           enable-cache: true
 
       - name: Install dependencies
         run: |
-          uv sync --group dev
+          uv sync --locked
+
+      - name: Install Task
+        uses: arduino/setup-task@c0bc642852239c2689f73f4ea6459c29405f3c52 # v3.0.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run linters
+        run: |
+          uv run task lint
+
+      - name: Build wheels and source tarball
+        run: |
+          uv build
+
+      - name: Check project build
+        run: |
+          uv run task build_check
+
+  test:
+    name: Test (Python ${{ matrix.python-version }}, Django ${{ matrix.django-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.11", "3.12", "3.13", "3.14", "3.15" ]
+        django-version: [ "5.2.*", "6.0.*", "6.1.*" ]
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        exclude:
+          - python-version: "3.11"
+            django-version: "6.0.*"
+          - python-version: "3.11"
+            django-version: "6.1.*"
+          - python-version: "3.15"
+            django-version: "5.2.*"
+          - python-version: "3.15"
+            django-version: "6.0.*"
+
+    defaults:
+      run:
+        shell: bash
+
+    env:
+      # `uv run` would reinstall the locked Django over the matrix version.
+      UV_NO_SYNC: "1"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+      - name: Install dependencies
+        run: |
+          uv sync --locked
 
       - name: Install Django
         run: |
@@ -90,28 +114,11 @@ jobs:
         env:
           DJANGO_VERSION: ${{ matrix.django-version }}
 
-      - name: Install Task
-        uses: arduino/setup-task@v3
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Run linters
-        run: |
-          uv run task lint
-
       - name: Run unittests
         run: |
-          uv run task coverage
+          uv run pytest --cov=./django_brotli/ --cov-branch --cov-report=xml --cov-report=term-missing
 
-      - name: Build wheels and source tarball
-        run: |
-          uv build
-
-      - name: Check project build
-        run: |
-          uv run task build_check
-
-      - uses: codecov/codecov-action@v7
+      - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           fail_ci_if_error: true
           files: coverage.xml

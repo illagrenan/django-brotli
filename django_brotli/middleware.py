@@ -2,15 +2,21 @@
 
 import os
 import re
-from collections.abc import AsyncIterable, AsyncIterator, Iterable, Iterator
+from collections.abc import Iterable, Iterator
 from typing import Final
 
 import brotli
-from django.http import HttpRequest, HttpResponse, StreamingHttpResponse
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseBase,
+    StreamingHttpResponse,
+)
 from django.utils.cache import patch_vary_headers
 from django.utils.deprecation import MiddlewareMixin
 
 RE_ACCEPT_ENCODING_BROTLI: Final = re.compile(r"\bbr\b")
+_ETAG_CLOSING_QUOTE_RE: Final = re.compile(r'"$')
 MIN_LEN_FOR_RESPONSE_TO_PROCESS: Final = 200
 BROTLI_MODE: Final[int] = getattr(brotli, os.environ.get("BROTLI_MODE", "MODE_GENERIC"))
 BROTLI_QUALITY: Final = int(os.environ.get("BROTLI_QUALITY", "4"))
@@ -21,9 +27,7 @@ __all__ = [
     "MIN_LEN_FOR_RESPONSE_TO_PROCESS",
     "RE_ACCEPT_ENCODING_BROTLI",
     "BrotliMiddleware",
-    "acompress_stream",
     "compress",
-    "compress_stream",
 ]
 
 
@@ -36,34 +40,19 @@ def compress(content: bytes) -> bytes:
     return compressed
 
 
-def compress_stream(chunks: Iterable[bytes]) -> Iterator[bytes]:
-    """Compress chunks one by one, flushing each so the client gets it at once."""
-    compressor = brotli.Compressor(mode=BROTLI_MODE, quality=BROTLI_QUALITY)
-    for chunk in chunks:
-        yield compressor.process(chunk) + compressor.flush()
-
-    yield compressor.finish()
-
-
-async def acompress_stream(chunks: AsyncIterable[bytes]) -> AsyncIterator[bytes]:
-    """Async variant of `compress_stream`."""
-    compressor = brotli.Compressor(mode=BROTLI_MODE, quality=BROTLI_QUALITY)
-    async for chunk in chunks:
-        yield compressor.process(chunk) + compressor.flush()
-
-    yield compressor.finish()
-
-
 class BrotliMiddleware(MiddlewareMixin):
     """Compress responses with brotli when the client accepts it.
 
-    Mirrors Django's `GZipMiddleware`.
+    Based on Django's `GZipMiddleware`.
     """
 
     def process_response(
-        self, request: HttpRequest, response: HttpResponse | StreamingHttpResponse
-    ) -> HttpResponse | StreamingHttpResponse:
-        if response.has_header("Content-Encoding"):
+        self, request: HttpRequest, response: HttpResponseBase
+    ) -> HttpResponseBase:
+        # Other HttpResponseBase subclasses have no known content attribute.
+        if response.has_header("Content-Encoding") or not isinstance(
+            response, HttpResponse | StreamingHttpResponse
+        ):
             return response
         if (
             isinstance(response, HttpResponse)
@@ -80,10 +69,12 @@ class BrotliMiddleware(MiddlewareMixin):
 
         if isinstance(response, StreamingHttpResponse):
             streaming_content = response.streaming_content
-            if isinstance(streaming_content, AsyncIterable):
-                response.streaming_content = acompress_stream(streaming_content)
-            else:
-                response.streaming_content = compress_stream(streaming_content)
+            # TODO: async streaming responses stay uncompressed; add an async
+            # compressor when someone needs it.
+            if not isinstance(streaming_content, Iterable):
+                return response
+
+            response.streaming_content = self.compress_stream(streaming_content)
             # The compressed size is unknown until the stream ends.
             del response.headers["Content-Length"]
         else:
@@ -94,11 +85,15 @@ class BrotliMiddleware(MiddlewareMixin):
             response.content = compressed_content
             response.headers["Content-Length"] = str(len(compressed_content))
 
-        # A strong ETag must change with the encoding; weaken it like GZipMiddleware.
-        etag = response.headers.get("ETag")
-        if etag and etag.startswith('"'):
-            response.headers["ETag"] = f"W/{etag}"
+        if response.has_header("ETag"):
+            response.headers["ETag"] = _ETAG_CLOSING_QUOTE_RE.sub(
+                ';br"', response.headers["ETag"]
+            )
 
         response.headers["Content-Encoding"] = "br"
 
         return response
+
+    def compress_stream(self, streaming_content: Iterable[bytes]) -> Iterator[bytes]:
+        """Compress the whole stream into a single chunk."""
+        yield compress(b"".join(streaming_content))

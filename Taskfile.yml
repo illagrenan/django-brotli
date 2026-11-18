@@ -55,41 +55,22 @@ tasks:
     cmds:
       - task: mypy
       - task: ruff
-      - task: isort_check
-      - task: black_check
-    silent: false
-
-  isort:
-    desc: Fix import order and remove unused imports (auto-fix)
-    cmds:
-      - uv run ruff check --select I,F401 --fix {{.SOURCES}}
-    silent: false
-
-  isort_check:
-    desc: Check import order and unused imports
-    cmds:
-      - uv run ruff check --select I,F401 {{.SOURCES}}
-    silent: false
-
-  black:
-    aliases:
-      - fmt
-    desc: Format code (ruff format)
-    cmds:
-      - uv run ruff format {{.SOURCES}}
-    silent: false
-
-  black_check:
-    desc: Check code formatting
-    cmds:
-      - uv run ruff format --check {{.SOURCES}}
+      - task: format_check
     silent: false
 
   format:
-    desc: Format code and check import order
+    aliases:
+      - fmt
+    desc: Fix lint issues and format code
     cmds:
-      - task: isort
-      - task: black
+      - uv run ruff check --fix {{.SOURCES}}
+      - uv format -- {{.SOURCES}}
+    silent: false
+
+  format_check:
+    desc: Check code formatting
+    cmds:
+      - uv format --check -- {{.SOURCES}}
     silent: false
 
   build:
