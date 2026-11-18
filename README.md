@@ -7,7 +7,7 @@
 ![Supported Django](https://img.shields.io/badge/django%20versions-%5E5.2%20||%20%5E6.0-blue.svg?logo=django&logoColor=white)
 <br>
 [![Build Status](https://github.com/illagrenan/django-brotli/actions/workflows/development.yml/badge.svg)](https://github.com/illagrenan/django-brotli/actions/workflows/development.yml)
-[![codecov](https://codecov.io/gh/illagrenan/django-brotli/branch/main/graphs/badge.svg)](https://codecov.io/github/illagrenan/django-brotli)
+[![codecov](https://codecov.io/gh/illagrenan/django-brotli/branch/master/graph/badge.svg)](https://codecov.io/github/illagrenan/django-brotli)
 
 * PyPI: <https://pypi.org/project/django-brotli/>
 * License: [MIT](https://choosealicense.com/licenses/mit/)
@@ -20,27 +20,30 @@ In November 2016 is brotli supported by Firefox, Chrome, Android Browser and Ope
 
 ## Installation
 
-- Supported Python versions are: `>=3.11`.
-- Supported Django versions are: `>=5.2`.
+1. **Requirements**: Python `>=3.11` and Django `>=5.2`. Install the package:
+    ```console linenums="0"
+    uv add django-brotli
+    ```
 
-```console
-uv add django-brotli
-```
+    _or_
 
-*or*
+    ```console linenums="0"
+    poetry add django-brotli@latest
+    ```
 
-```console
-pip install --upgrade django-brotli
-```
+    _or_
 
-Add `django_brotli.middleware.BrotliMiddleware` to `MIDDLEWARE`:
+    ```console linenums="0"
+    pip install --upgrade django-brotli
+    ```
 
-```python
-MIDDLEWARE = [
-    "django_brotli.middleware.BrotliMiddleware",
-    # ...
-]
-```
+2. Add `django_brotli.middleware.BrotliMiddleware` to `MIDDLEWARE`:
+    ```python
+    MIDDLEWARE = [
+        "django_brotli.middleware.BrotliMiddleware",
+        # ...
+    ]
+    ```
 
 ## Configuration
 
