@@ -1,221 +1,139 @@
 import gzip
-from collections.abc import Callable
-from typing import ClassVar, MutableMapping, Optional
+from collections.abc import AsyncIterator, Callable, Iterator
 
 import brotli
 import pytest
 from django.http import HttpRequest, HttpResponse, StreamingHttpResponse
 from django.middleware.gzip import GZipMiddleware
-from faker import Faker
 
-from django_brotli.middleware import MIN_LEN_FOR_RESPONSE_TO_PROCESS, BrotliMiddleware
-
-
-class FakeRequestAcceptsBrotli:
-    META: ClassVar[dict[str, str]] = {"HTTP_ACCEPT_ENCODING": "gzip, deflate, sdch, br"}
+from django_brotli.middleware import BrotliMiddleware
 
 
-class FakeLegacyRequest:
-    META: ClassVar[dict[str, str]] = {"HTTP_ACCEPT_ENCODING": "gzip, deflate, sdch"}
-
-
-class FakeResponse:
-    streaming: bool = False
-    content: bytes
-    headers: MutableMapping[str, str]
-
-    def __init__(
-        self,
-        content: str,
-        headers: Optional[MutableMapping[str, str]] = None,
-        streaming: Optional[bool] = None,
-    ) -> None:
-        self.content = content.encode(encoding="utf-8")
-        self.headers = headers or {}
-
-        if streaming:
-            self.streaming = streaming
-
-    def has_header(self, header: str) -> bool:
-        return header in self.headers
-
-    def get(self, key: str) -> Optional[str]:
-        return self.headers.get(key)
-
-    def __getitem__(self, header: str) -> str:
-        return self.headers[header]
-
-    def __setitem__(self, header: str, value: str) -> None:
-        self.headers[header] = value
-
-
-@pytest.fixture(scope="session")
-def faker() -> Faker:
-    return Faker()
-
-
-@pytest.fixture
-def sample_text(faker: Faker) -> str:
-    """Generate a long text suitable for compression testing"""
-    return " ".join(faker.paragraphs(nb=20))
-
-
-@pytest.fixture
-def short_text(faker: Faker) -> str:
-    """Generate a short text that shouldn't be compressed"""
-    return faker.sentence()
-
-
-@pytest.fixture
-def fake_request() -> FakeRequestAcceptsBrotli:
-    return FakeRequestAcceptsBrotli()
-
-
-@pytest.fixture
-def fake_legacy_request() -> FakeLegacyRequest:
-    return FakeLegacyRequest()
-
-
-@pytest.fixture
-def get_response(sample_text: str) -> Callable[[HttpRequest], HttpResponse]:
-    def _get_response(request: HttpRequest) -> HttpResponse:
-        return FakeResponse(content=sample_text)
-
-    return _get_response
-
-
-@pytest.fixture
-def brotli_middleware(
-    get_response: Callable[[HttpRequest], HttpResponse],
-) -> BrotliMiddleware:
-    return BrotliMiddleware(get_response=get_response)
-
-
-def test_middleware_compress_response(
-    fake_request: FakeRequestAcceptsBrotli,
-    brotli_middleware: BrotliMiddleware,
-    sample_text: str,
+def test_response_is_compressed(
+    brotli_request: HttpRequest, brotli_middleware: BrotliMiddleware, sample_text: str
 ) -> None:
-    fake_response = FakeResponse(content=sample_text)
-    brotli_response = brotli_middleware.process_response(fake_request, fake_response)
-    decompressed_response = brotli.decompress(brotli_response.content)
-
-    assert sample_text == decompressed_response.decode(encoding="utf-8")
-    assert brotli_response.get("Content-Encoding") == "br"
-
-
-@pytest.fixture
-def streaming_sequence(faker: Faker) -> list[bytes]:
-    """Generate a sequence of realistic text chunks for streaming tests"""
-    return [
-        faker.paragraph(nb_sentences=50).encode("utf-8"),  # Long chunk
-        faker.text(max_nb_chars=200).encode("utf-8"),  # Medium chunk
-        faker.paragraph(nb_sentences=30).encode("utf-8"),  # Another chunk
-    ]
-
-
-def test_compress_streaming_response(
-    fake_request: FakeRequestAcceptsBrotli,
-    get_response: Callable[[HttpRequest], HttpResponse],
-    streaming_sequence: list[bytes],
-) -> None:
-    """Test that streaming content is properly compressed"""
-
-    def get_stream_response() -> StreamingHttpResponse:
-        resp = StreamingHttpResponse(streaming_sequence)
-        resp["Content-Type"] = "text/html; charset=UTF-8"
-        return resp
-
-    fake_response = get_stream_response()
-    brotli_middleware = BrotliMiddleware(get_response=get_response)
-    brotli_response = brotli_middleware.process_response(fake_request, fake_response)
-
-    # Collect all streaming content
-    compressed_content = b"".join(brotli_response.streaming_content)
-    decompressed_response = brotli.decompress(compressed_content)
-
-    assert b"".join(streaming_sequence) == decompressed_response
-    assert brotli_response.get("Content-Encoding") == "br"
-    assert not brotli_response.has_header("Content-Length")
-
-
-def test_etag_is_updated_if_present(
-    fake_request: FakeRequestAcceptsBrotli,
-    brotli_middleware: BrotliMiddleware,
-    sample_text: str,
-) -> None:
-    fake_etag_content = '"foo"'
-    fake_response = FakeResponse(
-        content=sample_text, headers={"ETag": fake_etag_content}
+    response = brotli_middleware.process_response(
+        brotli_request, HttpResponse(sample_text)
     )
 
-    assert fake_response["ETag"] == fake_etag_content
-
-    brotli_response = brotli_middleware.process_response(fake_request, fake_response)
-    decompressed_response = brotli.decompress(brotli_response.content)
-
-    assert sample_text == decompressed_response.decode(encoding="utf-8")
-    assert brotli_response["ETag"] == '"foo;br\\"'
+    assert brotli.decompress(response.content).decode() == sample_text
+    assert response["Content-Encoding"] == "br"
+    assert response["Content-Length"] == str(len(response.content))
+    assert response["Vary"] == "Accept-Encoding"
 
 
-def test_middleware_wont_compress_response_if_response_is_small(
-    fake_request: FakeRequestAcceptsBrotli,
+def test_streaming_response_is_compressed_chunk_by_chunk(
+    brotli_request: HttpRequest,
     brotli_middleware: BrotliMiddleware,
-    short_text: str,
+    streaming_chunks: list[bytes],
 ) -> None:
-    assert len(short_text) < MIN_LEN_FOR_RESPONSE_TO_PROCESS
+    response = brotli_middleware.process_response(
+        brotli_request, StreamingHttpResponse(streaming_chunks)
+    )
+    assert isinstance(response, StreamingHttpResponse)
+    assert isinstance(response.streaming_content, Iterator)
 
-    fake_response = FakeResponse(content=short_text)
-    brotli_response = brotli_middleware.process_response(fake_request, fake_response)
+    compressed_chunks = list(response.streaming_content)
 
-    assert short_text == brotli_response.content.decode(encoding="utf-8")
-    assert "Content-Encoding" not in brotli_response.headers
+    assert brotli.decompress(b"".join(compressed_chunks)) == b"".join(streaming_chunks)
+    assert len(compressed_chunks) == len(streaming_chunks) + 1
+    assert response["Content-Encoding"] == "br"
+    assert not response.has_header("Content-Length")
 
 
-def test_middleware_wont_compress_if_client_not_accept(
-    fake_legacy_request: FakeLegacyRequest,
-    brotli_middleware: BrotliMiddleware,
-    sample_text: str,
+def test_binary_streaming_response_is_compressed(
+    brotli_request: HttpRequest, brotli_middleware: BrotliMiddleware
 ) -> None:
-    fake_response = FakeResponse(content=sample_text)
-    brotli_response = brotli_middleware.process_response(
-        fake_legacy_request, fake_response
+    binary_chunks = [bytes(range(256)) * 4, b"\xff\xfe" * 300]
+
+    response = brotli_middleware.process_response(
+        brotli_request, StreamingHttpResponse(binary_chunks)
+    )
+    assert isinstance(response, StreamingHttpResponse)
+    assert isinstance(response.streaming_content, Iterator)
+
+    assert brotli.decompress(b"".join(response.streaming_content)) == b"".join(
+        binary_chunks
     )
 
-    assert sample_text == brotli_response.content.decode(encoding="utf-8")
-    assert "Content-Encoding" not in brotli_response.headers
 
-
-def test_middleware_wont_compress_if_response_is_already_compressed(
-    fake_request: FakeRequestAcceptsBrotli,
-    get_response: Callable[[HttpRequest], HttpResponse],
-    sample_text: str,
+async def test_async_streaming_response_is_compressed(
+    brotli_request: HttpRequest,
+    brotli_middleware: BrotliMiddleware,
+    streaming_chunks: list[bytes],
+    async_chunks_factory: Callable[[list[bytes]], AsyncIterator[bytes]],
 ) -> None:
-    fake_response = FakeResponse(content=sample_text)
-
-    brotli_middleware = BrotliMiddleware(get_response=get_response)
-    django_gzip_middleware = GZipMiddleware(get_response=get_response)
-
-    gzip_response = django_gzip_middleware.process_response(fake_request, fake_response)
-    brotli_response = brotli_middleware.process_response(fake_request, gzip_response)
-
-    assert sample_text == gzip.decompress(brotli_response.content).decode(
-        encoding="utf-8"
+    response = brotli_middleware.process_response(
+        brotli_request, StreamingHttpResponse(async_chunks_factory(streaming_chunks))
     )
+    assert isinstance(response, StreamingHttpResponse)
+    assert isinstance(response.streaming_content, AsyncIterator)
+
+    compressed = b"".join([chunk async for chunk in response.streaming_content])
+
+    assert brotli.decompress(compressed) == b"".join(streaming_chunks)
+    assert response["Content-Encoding"] == "br"
+
+
+def test_strong_etag_is_weakened(
+    brotli_request: HttpRequest, brotli_middleware: BrotliMiddleware, sample_text: str
+) -> None:
+    original_response = HttpResponse(sample_text, headers={"ETag": '"foo"'})
+
+    response = brotli_middleware.process_response(brotli_request, original_response)
+
+    assert response["ETag"] == 'W/"foo"'
+
+
+def test_short_response_is_not_compressed(
+    brotli_request: HttpRequest, brotli_middleware: BrotliMiddleware, short_text: str
+) -> None:
+    response = brotli_middleware.process_response(
+        brotli_request, HttpResponse(short_text)
+    )
+
+    assert response.content.decode() == short_text
+    assert not response.has_header("Content-Encoding")
+
+
+def test_response_is_not_compressed_for_client_without_brotli(
+    legacy_request: HttpRequest, brotli_middleware: BrotliMiddleware, sample_text: str
+) -> None:
+    response = brotli_middleware.process_response(
+        legacy_request, HttpResponse(sample_text)
+    )
+
+    assert response.content.decode() == sample_text
+    assert not response.has_header("Content-Encoding")
+    assert response["Vary"] == "Accept-Encoding"
+
+
+def test_gzipped_response_is_not_compressed_again(
+    brotli_request: HttpRequest, brotli_middleware: BrotliMiddleware, sample_text: str
+) -> None:
+    gzip_middleware = GZipMiddleware(get_response=lambda request: HttpResponse())
+    gzip_response = gzip_middleware.process_response(
+        brotli_request, HttpResponse(sample_text)
+    )
+    assert isinstance(gzip_response, HttpResponse)
+
+    response = brotli_middleware.process_response(brotli_request, gzip_response)
+
+    assert gzip.decompress(response.content).decode() == sample_text
 
 
 @pytest.mark.parametrize("content_encoding", ["gzip", "br", "deflate", "compress"])
-def test_middleware_skips_already_compressed_content(
-    fake_request: FakeRequestAcceptsBrotli,
+def test_already_encoded_response_is_skipped(
+    brotli_request: HttpRequest,
     brotli_middleware: BrotliMiddleware,
     sample_text: str,
     content_encoding: str,
 ) -> None:
-    """Test that middleware skips processing if any compression is already applied"""
-    fake_response = FakeResponse(
-        content=sample_text, headers={"Content-Encoding": content_encoding}
+    original_response = HttpResponse(
+        sample_text, headers={"Content-Encoding": content_encoding}
     )
 
-    response = brotli_middleware.process_response(fake_request, fake_response)
-    assert response.get("Content-Encoding") == content_encoding
-    assert sample_text == response.content.decode(encoding="utf-8")
+    response = brotli_middleware.process_response(brotli_request, original_response)
+
+    assert response["Content-Encoding"] == content_encoding
+    assert response.content.decode() == sample_text

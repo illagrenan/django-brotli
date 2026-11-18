@@ -1,22 +1,19 @@
-# -*- encoding: utf-8 -*-
-# ! python3
+"""Brotli compression middleware for Django."""
 
 import os
 import re
+from collections.abc import AsyncIterable, AsyncIterator, Iterable, Iterator
+from typing import Final
 
 import brotli
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, StreamingHttpResponse
 from django.utils.cache import patch_vary_headers
+from django.utils.deprecation import MiddlewareMixin
 
-try:
-    from django.utils.deprecation import MiddlewareMixin
-except ImportError:
-    MiddlewareMixin = object
-
-RE_ACCEPT_ENCODING_BROTLI = re.compile(r"\bbr\b")
-MIN_LEN_FOR_RESPONSE_TO_PROCESS = 200
-BROTLI_MODE = getattr(brotli, os.environ.get("BROTLI_MODE", "MODE_GENERIC"))
-BROTLI_QUALITY = int(os.environ.get("BROTLI_QUALITY", "4"))
+RE_ACCEPT_ENCODING_BROTLI: Final = re.compile(r"\bbr\b")
+MIN_LEN_FOR_RESPONSE_TO_PROCESS: Final = 200
+BROTLI_MODE: Final[int] = getattr(brotli, os.environ.get("BROTLI_MODE", "MODE_GENERIC"))
+BROTLI_QUALITY: Final = int(os.environ.get("BROTLI_QUALITY", "4"))
 
 __all__ = [
     "BROTLI_MODE",
@@ -24,81 +21,84 @@ __all__ = [
     "MIN_LEN_FOR_RESPONSE_TO_PROCESS",
     "RE_ACCEPT_ENCODING_BROTLI",
     "BrotliMiddleware",
+    "acompress_stream",
     "compress",
+    "compress_stream",
 ]
 
 
-def compress(obj: bytes) -> bytes:
-    return brotli.compress(obj, BROTLI_MODE, BROTLI_QUALITY)
+def compress(content: bytes) -> bytes:
+    """Compress the whole content at once."""
+    compressed: bytes = brotli.compress(
+        content, mode=BROTLI_MODE, quality=BROTLI_QUALITY
+    )
+
+    return compressed
 
 
-# noinspection PyClassHasNoInit
+def compress_stream(chunks: Iterable[bytes]) -> Iterator[bytes]:
+    """Compress chunks one by one, flushing each so the client gets it at once."""
+    compressor = brotli.Compressor(mode=BROTLI_MODE, quality=BROTLI_QUALITY)
+    for chunk in chunks:
+        yield compressor.process(chunk) + compressor.flush()
+
+    yield compressor.finish()
+
+
+async def acompress_stream(chunks: AsyncIterable[bytes]) -> AsyncIterator[bytes]:
+    """Async variant of `compress_stream`."""
+    compressor = brotli.Compressor(mode=BROTLI_MODE, quality=BROTLI_QUALITY)
+    async for chunk in chunks:
+        yield compressor.process(chunk) + compressor.flush()
+
+    yield compressor.finish()
+
+
 class BrotliMiddleware(MiddlewareMixin):
-    """
-    This middleware compresses content if the browser allows `brotli` compression.
-    It sets the Vary header accordingly, so that caches will base their storage
-    on the Accept-Encoding header. Code of this middleware is based
-    on Django's `GZipMiddleware`.
+    """Compress responses with brotli when the client accepts it.
+
+    Mirrors Django's `GZipMiddleware`.
     """
 
     def process_response(
-        self, request: HttpRequest, response: HttpResponse
-    ) -> HttpResponse:
+        self, request: HttpRequest, response: HttpResponse | StreamingHttpResponse
+    ) -> HttpResponse | StreamingHttpResponse:
+        if response.has_header("Content-Encoding"):
+            return response
         if (
-            response.has_header("Content-Encoding")
-            or not self._accepts_brotli_encoding(request)
-            or (
-                not response.streaming
-                and len(response.content) < MIN_LEN_FOR_RESPONSE_TO_PROCESS
-            )
+            isinstance(response, HttpResponse)
+            and len(response.content) < MIN_LEN_FOR_RESPONSE_TO_PROCESS
         ):
-            # ---------
-            # 1) brotlipy doesn't support streaming compression,
-            #       see: https://github.com/google/brotli/issues/191
-            # 2) Avoid brotli if we've already got a content-encoding.
-            # 3) Client doesn't support brotli
-            # 4) It's not worth attempting to compress really short responses.
-            #    This was taken from django GZipMiddleware.
-            # ---------
             return response
 
         patch_vary_headers(response, ("Accept-Encoding",))
 
-        if response.streaming:
-            compressed_content = self.compress_stream(response.streaming_content)
-            response.streaming_content = compressed_content
+        if not RE_ACCEPT_ENCODING_BROTLI.search(
+            request.headers.get("Accept-Encoding", "")
+        ):
+            return response
 
-            # Delete the `Content-Length` header for streaming content, because
-            # we won't know the compressed size until we stream it.
-            del response["Content-Length"]
+        if isinstance(response, StreamingHttpResponse):
+            streaming_content = response.streaming_content
+            if isinstance(streaming_content, AsyncIterable):
+                response.streaming_content = acompress_stream(streaming_content)
+            else:
+                response.streaming_content = compress_stream(streaming_content)
+            # The compressed size is unknown until the stream ends.
+            del response.headers["Content-Length"]
         else:
             compressed_content = compress(response.content)
-
-            # Return the compressed content only if it's actually shorter.
             if len(compressed_content) >= len(response.content):
                 return response
 
             response.content = compressed_content
-            response["Content-Length"] = str(len(compressed_content))
+            response.headers["Content-Length"] = str(len(compressed_content))
 
-        if response.has_header("ETag"):
-            response["ETag"] = re.sub(r"\"$", r";br\"", response["ETag"])
+        # A strong ETag must change with the encoding; weaken it like GZipMiddleware.
+        etag = response.headers.get("ETag")
+        if etag and etag.startswith('"'):
+            response.headers["ETag"] = f"W/{etag}"
 
-        response["Content-Encoding"] = "br"
+        response.headers["Content-Encoding"] = "br"
 
         return response
-
-    def compress_stream(self, streaming_content):
-        streaming_content = [line.decode("utf-8") for line in list(streaming_content)]
-        streaming_content = "".join(streaming_content).encode()
-        streaming_content = (x for x in [compress(streaming_content)])
-
-        return streaming_content
-
-    # noinspection PyMethodMayBeStatic
-    def _accepts_brotli_encoding(self, request: HttpRequest) -> bool:
-        return bool(
-            RE_ACCEPT_ENCODING_BROTLI.search(
-                request.META.get("HTTP_ACCEPT_ENCODING", "")
-            )
-        )

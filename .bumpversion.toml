@@ -1,5 +1,7 @@
 [tool.bumpversion]
 current_version = "0.4.0"
+# uv.lock records the package's own version
+pre_commit_hooks = ["uv lock", "git add uv.lock"]
 
 [[tool.bumpversion.files]]
 filename = "pyproject.toml"

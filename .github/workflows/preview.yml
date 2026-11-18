@@ -12,53 +12,44 @@ jobs:
 
     strategy:
       matrix:
-        python-versions: [ "3.14" ]
+        python-version: [ "3.15" ]
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
-          python-version: ${{ matrix.python-versions }}
+          python-version: ${{ matrix.python-version }}
 
-      - name: Install Poetry
-        run: |
-          pipx install poetry==2.0.0
-          poetry config virtualenvs.create true
-          poetry config virtualenvs.in-project true
-
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ matrix.python-versions }}-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            venv-${{ runner.os }}-${{ matrix.python-versions }}-
+          enable-cache: true
 
       - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: |
-          poetry install -vv --no-interaction
+          uv sync --group dev
 
       - name: Install Task
-        uses: arduino/setup-task@v2
+        uses: arduino/setup-task@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run linters
         run: |
-          poetry run task lint
+          uv run task lint
 
       - name: Run unittests
         run: |
-          poetry run task coverage
+          uv run task coverage
 
       - name: Build wheels and source tarball
         run: |
-          poetry version $(poetry version --short)-dev.$GITHUB_RUN_NUMBER
-          poetry version --short
-          poetry build
+          # Create dev version using sed to modify pyproject.toml
+          sed -i 's/version = "\([^"]*\)"/version = "\1-dev.'$GITHUB_RUN_NUMBER'"/' pyproject.toml
+          uv build
 
       - name: publish to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

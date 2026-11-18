@@ -12,96 +12,106 @@ jobs:
 
     strategy:
       matrix:
-        python-versions: [ "3.10", "3.11", "3.12", "3.13", "3.14" ]
-        django-versions: [ "4.2.*", "5.0.*", "5.1.*", "5.2.*", "6.0.*" ]
+        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14", "3.15" ]
+        django-version: [ "4.2.*", "5.0.*", "5.1.*", "5.2.*", "6.0.*", "6.1.*"]
         os: [ ubuntu-latest, macos-latest, windows-latest ]
         exclude:
-          - python-versions: "3.10"
-            django-versions: "6.0.*"
-          - python-versions: "3.11"
-            django-versions: "6.0.*"
-          - python-versions: "3.13"
-            django-versions: "4.2.*"
-          - python-versions: "3.13"
-            django-versions: "5.0.*"
-          - python-versions: "3.14"
-            django-versions: "4.2.*"
-          - python-versions: "3.14"
-            django-versions: "5.0.*"
-          - python-versions: "3.14"
-            django-versions: "5.1.*"
-          - python-versions: "3.14"
-            django-versions: "5.2.*"
+          - python-version: "3.10"
+            django-version: "6.0.*"
+          - python-version: "3.10"
+            django-version: "6.1.*"
+          - python-version: "3.11"
+            django-version: "6.0.*"
+          - python-version: "3.11"
+            django-version: "6.1.*"
+          - python-version: "3.13"
+            django-version: "4.2.*"
+          - python-version: "3.13"
+            django-version: "5.0.*"
+          - python-version: "3.14"
+            django-version: "4.2.*"
+          - python-version: "3.14"
+            django-version: "5.0.*"
+          - python-version: "3.14"
+            django-version: "5.1.*"
+          - python-version: "3.15"
+            django-version: "4.2.*"
+          - python-version: "3.15"
+            django-version: "5.0.*"
+          - python-version: "3.15"
+            django-version: "5.1.*"
+          - python-version: "3.15"
+            django-version: "5.2.*"
+          - python-version: "3.15"
+            django-version: "6.0.*"
     defaults:
       run:
         shell: bash
     runs-on: ${{ matrix.os }}
 
+    env:
+      # `uv run` syncs the environment from uv.lock before running, which would
+      # reinstall the locked Django over the matrix version installed below.
+      UV_NO_SYNC: "1"
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Python
         id: setup-python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
-          python-version: ${{ matrix.python-versions }}
+          python-version: ${{ matrix.python-version }}
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
-          version: 2.0.0
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          virtualenvs-path: .venv
-          installer-parallel: true
-
-      - name: Check pyproject.toml
-        run: |
-          poetry check -vv -n
-
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v5
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
+          enable-cache: true
 
       - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: |
-          poetry install -vv --no-interaction
+          uv sync --group dev
 
       - name: Install Django
         run: |
-          poetry run pip install --upgrade django==${{ matrix.django-versions }}
+          uv pip install --upgrade "django==$DJANGO_VERSION"
+          uv run python - <<'EOF'
+          import os
+
+          import django
+
+          expected = os.environ["DJANGO_VERSION"].removesuffix(".*")
+          actual = django.get_version()
+
+          if actual != expected and not actual.startswith(f"{expected}."):
+              raise SystemExit(f"Expected Django {expected}, got {actual}")
+          EOF
+        env:
+          DJANGO_VERSION: ${{ matrix.django-version }}
 
       - name: Install Task
-        uses: arduino/setup-task@v2
-        if: steps.cached-task.outputs.cache-hit != 'true'
+        uses: arduino/setup-task@v3
         with:
-          version: 3.4.x
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run linters
         run: |
-          poetry run task lint
+          uv run task lint
 
       - name: Run unittests
         run: |
-          poetry run task coverage
+          uv run task coverage
 
       - name: Build wheels and source tarball
         run: |
-          poetry build -vv -n
+          uv build
 
       - name: Check project build
         run: |
-          poetry run task build_check
+          uv run task build_check
 
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@v7
         with:
           fail_ci_if_error: true
           files: coverage.xml

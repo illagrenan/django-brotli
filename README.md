@@ -20,11 +20,11 @@ In November 2016 is brotli supported by Firefox, Chrome, Android Browser and Ope
 
 ## Installation
 
-- Supported Python versions are: `">=3.10, <3.15"`.
-- Supported Django versions are: `>=4,<7`.
+- Supported Python versions are: `>=3.10`.
+- Supported Django versions are: `>=4.2`.
 
 ```console
-poetry add django-brotli@latest
+uv add django-brotli
 ```
 
 *or*
@@ -50,9 +50,9 @@ MIDDLEWARE = [
 ## Contributing
 
 1. Clone this repository (`git clone ...`)
-2. Install package dependencies: `poetry install --with dev -v`
+2. Install package dependencies: `uv sync`
 3. Change some code
-4. Run tests: in project root simply execute `pytest`
+4. Run linters and tests: `uv run task lint coverage`
 5. Submit PR :)
 
 ## License

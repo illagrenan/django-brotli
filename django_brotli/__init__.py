@@ -1,16 +1,13 @@
-# -*- encoding: utf-8 -*-
-# ! python3
-
 """Middleware that compresses response using brotli algorithm."""
-
-from __future__ import annotations
 
 from .middleware import (
     BROTLI_MODE,
     BROTLI_QUALITY,
     MIN_LEN_FOR_RESPONSE_TO_PROCESS,
     BrotliMiddleware,
+    acompress_stream,
     compress,
+    compress_stream,
 )
 
 __author__ = """Václav Dohnal"""
@@ -24,5 +21,7 @@ __all__ = [
     "MIN_LEN_FOR_RESPONSE_TO_PROCESS",
     "BrotliMiddleware",
     "__version__",
+    "acompress_stream",
     "compress",
+    "compress_stream",
 ]

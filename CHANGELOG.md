@@ -6,6 +6,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Add support for Python 3.15 and Django 6.1.
+- Compress async streaming responses.
+
+### Changed
+
+- Streaming responses are compressed chunk by chunk instead of being buffered whole.
+- Strong `ETag` is weakened (`W/"..."`) like in Django's `GZipMiddleware`.
+- Replace Poetry with uv (`uv_build` backend).
+- Type check with `mypy --strict`, `django-stubs` and pyright.
+
+### Fixed
+
+- Binary streaming responses no longer fail on UTF-8 decoding.
+- `Vary: Accept-Encoding` is set also when the client does not accept brotli.
+
+### Removed
+
+- `BrotliMiddleware.compress_stream()`; use module-level `compress_stream()`.
+
 ## [0.4.0] - 2025-12-07
 
 [:material-github: Github release](https://github.com/illagrenan/django-brotli/releases/tag/v0.4.0)
