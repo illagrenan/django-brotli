@@ -42,6 +42,17 @@ MIDDLEWARE = [
 ]
 ```
 
+## Configuration
+
+Set these environment variables before Django starts; they are read once on import.
+
+| Variable         | Default        | Values                                    |
+|------------------|----------------|-------------------------------------------|
+| `BROTLI_QUALITY` | `4`            | `0` (fastest) to `11` (smallest output)   |
+| `BROTLI_MODE`    | `MODE_GENERIC` | `MODE_GENERIC`, `MODE_TEXT`, `MODE_FONT`  |
+
+The default quality `4` is about 2× faster than Django's `GZipMiddleware` and gives about 20% smaller output ([#117](https://github.com/illagrenan/django-brotli/pull/117)).
+
 ## Credits and Resources
 
 - [Brotli on Wikipedia](https://en.wikipedia.org/wiki/Brotli)
